@@ -13,7 +13,7 @@ def add_matrices2D(mat1, mat2):
     mat2 (list): A nested list representing the second input matrix.
 
     Returns:
-    list: A nested list representing the element-wise sum of the input matrices.
+    list: nested list representing element-wise sum of input matrices.
     """
     if len(mat1) != len(mat2) or len(mat1[0]) != len(mat2[0]):
         return None
