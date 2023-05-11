@@ -6,16 +6,13 @@
 
 def matrix_shape(matrix):
     """
-    Calculates the shape of a given matrix 
-    and returns it as a list of integers.
+    Calculates the shape of matrix and returns list of integers.
 
     Args:
-    matrix (list): A nested list 
-    representing the input matrix.
+    matrix (list): A nested list representing the input matrix.
 
     Returns:
-    list: A list of integers representing 
-    the shape of the input matrix.
+    list: list of integers representing shape of the input matrix.
     """
     shape = []
     while isinstance(matrix, list):
