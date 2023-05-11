@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 
+"""
+This module contains a function to perform matrix multiplication without any imports.
+
+The main function in this module is `mat_mul` which multiplies two matrices.
+"""
+
+# Your mat_mul function goes here
+
+
 # Multiplies two matrices mat1 and mat2
 # Args: mat1, mat2
 # Returns: new matrix
