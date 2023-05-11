@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
+
+# Multiplies two matrices mat1 and mat2
+# Args: mat1, mat2
+# Returns: new matrix
 def mat_mul(mat1, mat2):
-    """
-    Multiplies two matrices mat1 and mat2.
-    Args: mat1, mat2
-    Returns: new matrix
-    """
     # Get dimensions of matrices
     rows1, cols1 = len(mat1), len(mat1[0])
     rows2, cols2 = len(mat2), len(mat2[0])
