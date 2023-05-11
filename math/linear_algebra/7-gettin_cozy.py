@@ -3,12 +3,9 @@
 7-gettin_cozy module
 """
 
-import numpy as np
-
-
 def cat_matrices2D(mat1, mat2, axis=0):
     """
-    Concatenates two matrices along a specific axis.
+    Concatenates two matrices along a specific axis without using NumPy.
 
     Args:
     mat1 (list): A nested list representing the first input matrix.
@@ -18,7 +15,16 @@ def cat_matrices2D(mat1, mat2, axis=0):
     Returns:
     list: A nested list representing the concatenation of the input matrices along the specified axis.
     """
-    try:
-        return np.concatenate((mat1, mat2), axis=axis).tolist()
-    except ValueError:
+    if axis == 0:
+        if len(mat1[0]) != len(mat2[0]):
+            return None
+        else:
+            return mat1 + mat2
+    elif axis == 1:
+        if len(mat1) != len(mat2):
+            return None
+        else:
+            return [mat1[i] + mat2[i] for i in range(len(mat1))]
+    else:
         return None
+    
