@@ -13,7 +13,7 @@ def add_arrays(arr1, arr2):
     arr2 (list): A list of ints/floats representing the second input array.
 
     Returns:
-    list: A list of ints/floats representing the element-wise sum of the input arrays.
+    list: list of ints/floats representing element-wise sum of input arrays.
     """
     if len(arr1) != len(arr2):
         return None
