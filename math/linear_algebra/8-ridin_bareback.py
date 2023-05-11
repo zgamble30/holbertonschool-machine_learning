@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-This module contains a function to perform matrix multiplication without any imports.
+module contains function to perform matrix multiplication
 
 The main function in this module is `mat_mul` which multiplies two matrices.
 """
