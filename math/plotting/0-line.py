@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
+
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+# Generate y values as the cube of x values in the range [0, 10]
 y = np.arange(0, 11) ** 3
 
-# Plot y as a solid red line
-plt.plot(y, color='red')
+# Plot y values with a red line
+plt.plot(y, 'r-')
 
-# Set the x-axis range to 0 to 10
+# Set the x-axis limits to [0, 10]
 plt.xlim(0, 10)
 
-# Add labels and title
-plt.xlabel('X-axis')
-plt.ylabel('Y-axis')
-plt.title('Line Graph')
-
-# Show the plot
+# Display the plot
 plt.show()
