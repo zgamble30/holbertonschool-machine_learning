@@ -2,18 +2,23 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Task 0 data
 y0 = np.arange(0, 11) ** 3
+
+# Task 1 data
 mean = [69, 0]
 cov = [[15, 8], [8, 15]]
 np.random.seed(5)
 x1, y1 = np.random.multivariate_normal(mean, cov, 2000).T
 y1 += 180
 
+# Task 2 data
 x2 = np.arange(0, 28651, 5730)
 r2 = np.log(0.5)
 t2 = 5730
 y2 = np.exp((r2 / t2) * x2)
 
+# Task 3 data
 x3 = np.arange(0, 21000, 1000)
 r3 = np.log(0.5)
 t31 = 5730
@@ -21,40 +26,56 @@ t32 = 1600
 y31 = np.exp((r3 / t31) * x3)
 y32 = np.exp((r3 / t32) * x3)
 
+# Task 4 data
 np.random.seed(5)
 student_grades = np.random.normal(68, 15, 50)
 
-# Plotting the subplots
-plt.figure()
+# Create the figure and subplots
+fig = plt.figure()
+fig.suptitle('All in One', fontsize='x-small')
 
-plt.subplot(3, 2, 1)
-plt.plot(y0, 'r', label='y0')
-plt.xlabel('Time (years)', fontsize='x-small')
-plt.ylabel('Fraction Remaining', fontsize='x-small')
-plt.title('Exponential Decay of Radioactive Elements', fontsize='x-small')
+# Task 0: Line Graph
+ax0 = plt.subplot(3, 2, 1)
+ax0.plot(y0, 'r-')
+ax0.set_title('Task 0 - Line Graph', fontsize='x-small')
+ax0.set_xlim(0, 10)
 
-plt.subplot(3, 2, 2)
-plt.plot(x1, y1, 'm.')
-plt.xlabel('Height (in)', fontsize='x-small')
-plt.ylabel('Weight (lbs)', fontsize='x-small')
-plt.title('Adult Height and Weight', fontsize='x-small')
+# Task 1: Scatter Plot
+ax1 = plt.subplot(3, 2, 2)
+ax1.scatter(x1, y1, color='magenta')
+ax1.set_title('Task 1 - Scatter Plot', fontsize='x-small')
+ax1.set_xlabel('Height (in)', fontsize='x-small')
+ax1.set_ylabel('Weight (lbs)', fontsize='x-small')
 
-plt.subplot(3, 2, 3)
-plt.plot(x2, y2, 'g-')
-plt.xlabel('Time (years)', fontsize='x-small')
-plt.ylabel('Fraction Remaining', fontsize='x-small')
-plt.title('Exponential Decay of C-14', fontsize='x-small')
+# Task 2: Change of Scale
+ax2 = plt.subplot(3, 2, 3)
+ax2.plot(x2, y2)
+ax2.set_title('Task 2 - Change of Scale', fontsize='x-small')
+ax2.set_xlabel('Time (years)', fontsize='x-small')
+ax2.set_ylabel('Fraction Remaining', fontsize='x-small')
+ax2.set_yscale('log')
+ax2.set_xlim(0, 28650)
 
-plt.subplot(3, 2, (5, 6))
-plt.hist(student_grades, bins=range(0, 101, 10), edgecolor='black')
-plt.xlabel('Grades', fontsize='x-small')
-plt.ylabel('Number of Students', fontsize='x-small')
-plt.title('Project A', fontsize='x-small')
+# Task 3: Two is Better Than One
+ax3 = plt.subplot(3, 2, 4)
+ax3.plot(x3, y31, 'r--', label='C-14')
+ax3.plot(x3, y32, 'g-', label='Ra-226')
+ax3.set_title('Task 3 - Two is Better Than One', fontsize='x-small')
+ax3.set_xlabel('Time (years)', fontsize='x-small')
+ax3.set_ylabel('Fraction Remaining', fontsize='x-small')
+ax3.set_xlim(0, 20000)
+ax3.set_ylim(0, 1)
+ax3.legend(fontsize='x-small')
 
-# Set the title for the entire figure
-plt.suptitle('All in One', fontsize='large')
+# Task 4: Frequency
+ax4 = plt.subplot(3, 2, (5, 6))
+ax4.hist(student_grades, bins=np.arange(0, 101, 10), edgecolor='black')
+ax4.set_title('Task 4 - Frequency', fontsize='x-small')
+ax4.set_xlabel('Grades', fontsize='x-small')
+ax4.set_ylabel('Number of Students', fontsize='x-small')
 
-# Adjust the layout and display the plot
+# Adjust the layout
 plt.tight_layout()
-plt.subplots_adjust(top=0.88)
+
+# Display the plot
 plt.show()
