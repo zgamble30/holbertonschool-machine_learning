@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+
 """
 Module to calculate the sum of squared values from 1 to n.
 """
