@@ -21,10 +21,7 @@ def poly_derivative(poly):
         return None
 
     # Calculate the derivative of the polynomial
-    derivative = []
-    for i in range(1, len(poly)):
-        derivative.append(i * poly[i])
+    derivative = [i * poly[i] for i in range(1, len(poly))]
 
     # Return the calculated derivative or [0] if the derivative is all zeros
-    return derivative if derivative != [0] * len(derivative) else [0]
-
+    return derivative if any(derivative) else [0]
