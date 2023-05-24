@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+
 class Poisson:
     """
     Class representing a Poisson distribution.
@@ -18,6 +19,7 @@ class Poisson:
             TypeError: If data is not a list.
             ValueError: If data does not contain at least two data points.
         """
+
         if data is None:
             if lambtha <= 0:
                 raise ValueError("lambtha must be a positive value")
