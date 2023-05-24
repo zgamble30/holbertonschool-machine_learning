@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-
 class Poisson:
     """
     Class representing a Poisson distribution.
@@ -42,6 +41,7 @@ class Poisson:
         Returns:
             int: Factorial of the number.
         """
+
         if n == 0 or n == 1:
             return 1
         else:
@@ -64,5 +64,6 @@ class Poisson:
         lambtha = self.lambtha
         k = int(k)
 
-        pmf_value = (lambtha ** k) * (e_approx ** (-lambtha)) / Poisson.factorial(k)
+        pmf_value = (lambtha ** k) * (e_approx ** (-lambtha))
+        pmf_value /= Poisson.factorial(k)
         return pmf_value
