@@ -1,4 +1,4 @@
-# 0x01-classification
+# classification
 ## In this section we go into classification
 ### Learning Objectives:
 1. What is a model?
