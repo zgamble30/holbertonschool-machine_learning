@@ -1,15 +1,23 @@
 #!/usr/bin/env python3
-""" task 3 """
+"""Accuracy"""
 import tensorflow as tf
 
 
 def calculate_accuracy(y, y_pred):
+    """Calculates the accuracy of a prediction
+
+    Args:
+        y (tensor): placeholder for the labels of the input data.
+        y_pred (tensor): network’s predictions.
+
+       Returns:
+           tensor: the decimal accuracy of the prediction.
+
     """
-    calcule de precision
-    :param y: int
-    :param y_pred: sayeb zebi
-    """
-    hmed = tf.equal(tf.argmax(y, axis=1, name=None),
-                    tf.argmax(y_pred, 1, name=None))
-    ras_zebi_fil_brouklou = tf.reduce_mean(tf.cast(hmed, "float32", name=None))
-    return ras_zebi_fil_brouklou
+    # We need to select the highest probability from the tensor that's
+    # returned out of the softmax. One we have that, we compare it
+    # against the actual value of y that we have should expected.
+    correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_pred, 1))
+
+    # Calculates and return the accuracy.
+    return tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
