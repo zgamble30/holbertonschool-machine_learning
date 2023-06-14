@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
-""" task 4 """
+"""
+Loss
+"""
+
 import tensorflow as tf
 
 
 def calculate_loss(y, y_pred):
+    """Calculates the cross-entropy loss of a prediction.
+
+    Args:
+        y (tensor): placeholder for the labels of the input data.
+        y_pred (tensor): the network’s predictions.
+
+    Returns:
+        tensor: the loss of the prediction
     """
-    calcule de perte
-    :param y: espace res
-    :param y_pred: le estim
-    """
-    zok_secretaire = tf.losses.softmax_cross_entropy(y, logits=y_pred,
-                                                     weights=1.0, scope=None)
-    return (zok_secretaire)
+    return tf.losses.softmax_cross_entropy(y, y_pred)
