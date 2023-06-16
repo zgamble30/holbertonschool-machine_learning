@@ -100,50 +100,49 @@ class NeuralNetwork:
         self.__W2 -= alpha * dW2
         self.__b2 -= alpha * db2
         self.__b1 -= alpha * db1
-        
+
     def train(self, X, Y, iterations=5000, alpha=0.05):
-    """
-    Trains the neural network
-    """
+        """
+        Trains the neural network
+        """
 
-    if not isinstance(iterations, int):
-        raise TypeError("iterations must be an integer")
-    if iterations <= 0:
-        raise ValueError("iterations must be a positive integer")
-    if not isinstance(alpha, float):
-        raise TypeError("alpha must be a float")
-    if alpha <= 0:
-        raise ValueError("alpha must be positive")
+        if not isinstance(iterations, int):
+            raise TypeError("iterations must be an integer")
+        if iterations <= 0:
+            raise ValueError("iterations must be a positive integer")
+        if not isinstance(alpha, float):
+            raise TypeError("alpha must be a float")
+        if alpha <= 0:
+            raise ValueError("alpha must be positive")
 
-    for i in range(iterations):
-        _, A2 = self.forward_prop(X)
-        self.gradient_descent(X, Y, self.__A1, A2, alpha)
+        for i in range(iterations):
+            _, A2 = self.forward_prop(X)
+            self.gradient_descent(X, Y, self.__A1, A2, alpha)
 
-        _, cost = self.forward_prop(X)
-        cost = np.squeeze(cost)
-        predictions = np.where(self.__A2 >= 0.5, 1, 0)
-        accuracy = np.mean(predictions == Y) * 100
+            _, cost = self.forward_prop(X)
+            cost = np.squeeze(cost)
+            predictions = np.where(self.__A2 >= 0.5, 1, 0)
+            accuracy = np.mean(predictions == Y) * 100
 
-    return predictions, cost
+        return predictions, cost, accuracy
 
-def evaluate(self, X, Y):
-    """
-    Evaluates the neural network's predictions
-    """
+    def evaluate(self, X, Y):
+        """
+        Evaluates the neural network's predictions
+        """
 
-    A1, A2 = self.forward_prop(X)
-    cost = self.cost(Y, A2)
-    predictions = np.where(A2 >= 0.5, 1, 0)
+        A1, A2 = self.forward_prop(X)
+        cost = self.cost(Y, A2)
+        predictions = np.where(A2 >= 0.5, 1, 0)
 
-    return predictions, cost
+        return predictions, cost
 
-def cost(self, Y, A):
-    """
-    Calculates the cost of the model using logistic regression
-    """
+    def cost(self, Y, A):
+        """
+        Calculates the cost of the model using logistic regression
+        """
 
-    m = Y.shape[1]
-    cost = (-1 / m) * np.sum(
-        Y * np.log(A) + (1 - Y) * np.log(1 - A))
+        m = Y.shape[1]
+        cost = (-1 / m) * np.sum(Y * np.log(A) + (1 - Y) * np.log(1 - A))
 
-    return cost
+        return cost
