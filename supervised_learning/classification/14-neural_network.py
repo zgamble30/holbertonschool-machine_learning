@@ -4,89 +4,136 @@ import numpy as np
 
 
 class NeuralNetwork:
-    def __init__(self, input_size, hidden_size):
+    def __init__(self, nx, nodes):
         """
-        Initializes the parameters of the neural network
-        """
+        Initialize the neural network.
 
-        np.random.seed(0)
-        self.W1 = np.random.randn(hidden_size, input_size)
-        self.b1 = np.zeros((hidden_size, 1))
-        self.W2 = np.random.randn(1, hidden_size)
-        self.b2 = 0
+        Arguments:
+        - nx: Number of input features.
+        - nodes: Number of nodes in the hidden layer.
+        """
+        self.__W1 = np.random.randn(nodes, nx)
+        self.__b1 = np.zeros((nodes, 1))
+        self.__A1 = 0
+        self.__W2 = np.random.randn(1, nodes)
+        self.__b2 = 0
+        self.__A2 = 0
 
     def sigmoid(self, Z):
         """
-        Applies the sigmoid activation function element-wise
-        """
+        Compute the sigmoid activation function.
 
+        Arguments:
+        - Z: Input value(s).
+
+        Returns:
+        - The sigmoid activation of Z.
+        """
         return 1 / (1 + np.exp(-Z))
 
     def forward_prop(self, X):
         """
-        Performs forward propagation to calculate the outputs
+        Perform forward propagation.
+
+        Arguments:
+        - X: Input data.
+
+        Returns:
+        - A tuple containing the activations of the hidden and output layers.
         """
-
-        Z1 = np.dot(self.W1, X) + self.b1
-        A1 = np.tanh(Z1)
-        Z2 = np.dot(self.W2, A1) + self.b2
-        A2 = self.sigmoid(Z2)
-
-        return A1, A2
-
-    def backward_prop(self, X, Y, A1, A2):
-        """
-        Performs backward propagation to update the parameters
-        """
-
-        m = Y.shape[1]
-
-        dZ2 = A2 - Y
-        dW2 = (1 / m) * np.dot(dZ2, A1.T)
-        db2 = (1 / m) * np.sum(dZ2, axis=1, keepdims=True)
-
-        dZ1 = np.dot(self.W2.T, dZ2) * (1 - np.power(A1, 2))
-        dW1 = (1 / m) * np.dot(dZ1, X.T)
-        db1 = (1 / m) * np.sum(dZ1, axis=1, keepdims=True)
-
-        return dW1, db1, dW2, db2
-
-    def train(self, X, Y, iterations=1000, alpha=0.01):
-        """
-        Trains the neural network on the given data
-        """
-
-        for i in range(iterations):
-            A1, A2 = self.forward_prop(X)
-            dW1, db1, dW2, db2 = self.backward_prop(X, Y, A1, A2)
-
-            self.W1 -= alpha * dW1
-            self.b1 -= alpha * db1
-            self.W2 -= alpha * dW2
-            self.b2 -= alpha * db2
-
-        predictions, cost, accuracy = self.evaluate(X, Y)
-
-        return predictions, cost, accuracy
-
-    def evaluate(self, X, Y):
-        """
-        Evaluates the neural network's predictions
-        """
-
-        A1, A2 = self.forward_prop(X)
-        cost = self.cost(Y, A2)
-        predictions = np.round(A2)
-        accuracy = np.mean(predictions == Y) * 100
-
-        return predictions, cost, accuracy
+        Z1 = np.matmul(self.__W1, X) + self.__b1
+        self.__A1 = self.sigmoid(Z1)
+        Z2 = np.matmul(self.__W2, self.__A1) + self.__b2
+        self.__A2 = self.sigmoid(Z2)
+        return self.__A1, self.__A2
 
     def cost(self, Y, A):
         """
-        Calculates the cross-entropy cost
+        Compute the cost function.
+
+        Arguments:
+        - Y: Correct labels.
+        - A: Predicted labels.
+
+        Returns:
+        - The cost value.
         """
-
         m = Y.shape[1]
-        cost = -1 / m * (np.dot(Y, np.log(A).T) + np.dot(1 - Y, np.log(1 - A).T))
+        cost = (-1 / m) * (
+            np.matmul(Y, np.log(A).T) +
+            np.matmul(1 - Y, np.log(1.0000001 - A).T)
+        )
+        return cost[0, 0]
 
-        return np.squeeze(cost)
+    def evaluate(self, X, Y):
+        """
+        Evaluate the neural network's predictions.
+
+        Arguments:
+        - X: Input data.
+        - Y: Correct labels.
+
+        Returns:
+        - A tuple containing the predicted labels and the cost.
+        """
+        A1, A2 = self.forward_prop(X)
+        cost = self.cost(Y, A2)
+        predictions = np.where(A2 >= 0.5, 1, 0)
+        return predictions, cost
+
+    def gradient_descent(self, X, Y, A1, A2, alpha=0.05):
+        """
+        Perform gradient descent to update weights and biases.
+
+        Arguments:
+        - X: Input data.
+        - Y: Correct labels.
+        - A1: Hidden layer activations.
+        - A2: Output layer activations.
+        - alpha: Learning rate.
+
+        Returns:
+        - None
+        """
+        m = Y.shape[1]
+        dZ2 = A2 - Y
+        dW2 = (1 / m) * np.matmul(dZ2, A1.T)
+        db2 = (1 / m) * np.sum(dZ2, axis=1, keepdims=True)
+
+        dZ1 = np.matmul(self.__W2.T, dZ2)
+        dZ1 *= A1 * (1 - A1)
+        dW1 = (1 / m) * np.matmul(dZ1, X.T)
+        db1 = (1 / m) * np.sum(dZ1, axis=1, keepdims=True)
+
+        self.__W1 -= alpha * dW1
+        self.__b1 -= alpha * db1
+        self.__W2 -= alpha * dW2
+        self.__b2 -= alpha * db2
+
+    def train(self, X, Y, iterations=5000, alpha=0.05):
+        """
+        Train the neural network.
+
+        Arguments:
+        - X: Input data.
+        - Y: Correct labels.
+        - iterations: Number of iterations to train over.
+        - alpha: Learning rate.
+
+        Returns:
+        - The evaluation of the training data after training.
+        """
+        if not isinstance(iterations, int):
+            raise TypeError("iterations must be an integer")
+        if iterations <= 0:
+            raise ValueError("iterations must be a positive integer")
+        if not isinstance(alpha, float):
+            raise TypeError("alpha must be a float")
+        if alpha <= 0:
+            raise ValueError("alpha must be positive")
+
+        for i in range(iterations):
+            A1, A2 = self.forward_prop(X)
+            self.gradient_descent(X, Y, A1, A2, alpha)
+
+        return self.evaluate(X, Y)
