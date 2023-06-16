@@ -1,139 +1,125 @@
 #!/usr/bin/env python3
 
+"""
+Neural Network Class
+"""
+
 import numpy as np
 
 
 class NeuralNetwork:
+    """Neural Network class"""
+
     def __init__(self, nx, nodes):
         """
-        Initialize the neural network.
+        Initialize the NeuralNetwork object
 
         Arguments:
-        - nx: Number of input features.
-        - nodes: Number of nodes in the hidden layer.
-        """
-        self.__W1 = np.random.randn(nodes, nx)
-        self.__b1 = np.zeros((nodes, 1))
-        self.__A1 = 0
-        self.__W2 = np.random.randn(1, nodes)
-        self.__b2 = 0
-        self.__A2 = 0
+          - nx (int): number of input features
+          - nodes (int): number of nodes in the hidden layer
 
-    def sigmoid(self, Z):
+        Attributes:
+          - W1 (numpy.ndarray): weights vector for the hidden layer
+          - b1 (numpy.ndarray): bias for the hidden layer
+          - A1 (float): activated output for the hidden layer
+          - W2 (numpy.ndarray): weights vector for the output neuron
+          - b2 (float): bias for the output neuron
+          - A2 (float): activated output for the output neuron
         """
-        Compute the sigmoid activation function.
 
-        Arguments:
-        - Z: Input value(s).
-
-        Returns:
-        - The sigmoid activation of Z.
-        """
-        return 1 / (1 + np.exp(-Z))
+        # Initialize weights using He et al. method
+        self.W1 = np.random.randn(nodes, nx) * np.sqrt(2 / nx)
+        self.b1 = np.zeros((nodes, 1))
+        self.A1 = 0
+        self.W2 = np.random.randn(1, nodes) * np.sqrt(2 / nodes)
+        self.b2 = 0
+        self.A2 = 0
 
     def forward_prop(self, X):
         """
-        Perform forward propagation.
+        Perform forward propagation
 
         Arguments:
-        - X: Input data.
+          - X (numpy.ndarray): input data (shape: m x nx)
 
         Returns:
-        - A tuple containing the activations of the hidden and output layers.
+          The activated output (self.A1, self.A2)
         """
-        Z1 = np.matmul(self.__W1, X) + self.__b1
-        self.__A1 = self.sigmoid(Z1)
-        Z2 = np.matmul(self.__W2, self.__A1) + self.__b2
-        self.__A2 = self.sigmoid(Z2)
-        return self.__A1, self.__A2
+
+        # Calculate hidden layer's activated output
+        Z1 = np.matmul(self.W1, X.T) + self.b1
+        self.A1 = 1 / (1 + np.exp(-Z1))
+
+        # Calculate output neuron's activated output
+        Z2 = np.matmul(self.W2, self.A1) + self.b2
+        self.A2 = 1 / (1 + np.exp(-Z2))
+
+        return self.A1, self.A2
 
     def cost(self, Y, A):
         """
-        Compute the cost function.
+        Calculate the cost of the model using logistic regression
 
         Arguments:
-        - Y: Correct labels.
-        - A: Predicted labels.
+          - Y (numpy.ndarray): correct labels (shape: 1 x m)
+          - A (numpy.ndarray): predicted labels (shape: 1 x m)
 
         Returns:
-        - The cost value.
+          The cost
         """
+
         m = Y.shape[1]
-        cost = (-1 / m) * (
-            np.matmul(Y, np.log(A).T) +
-            np.matmul(1 - Y, np.log(1.0000001 - A).T)
+        cost = -(1 / m) * np.sum(
+            Y * np.log(A) + (1 - Y) * np.log(1 - A)
         )
-        return cost[0, 0]
+        return cost
 
     def evaluate(self, X, Y):
         """
-        Evaluate the neural network's predictions.
+        Evaluate the neural network's predictions
 
         Arguments:
-        - X: Input data.
-        - Y: Correct labels.
+          - X (numpy.ndarray): input data (shape: m x nx)
+          - Y (numpy.ndarray): correct labels (shape: 1 x m)
 
         Returns:
-        - A tuple containing the predicted labels and the cost.
+          The neuron's prediction and the cost
         """
-        A1, A2 = self.forward_prop(X)
+
+        _, A2 = self.forward_prop(X)
         cost = self.cost(Y, A2)
-        predictions = np.where(A2 >= 0.5, 1, 0)
-        return predictions, cost
+        prediction = np.where(A2 >= 0.5, 1, 0)
+        return prediction, cost
 
     def gradient_descent(self, X, Y, A1, A2, alpha=0.05):
         """
-        Perform gradient descent to update weights and biases.
+        Perform one pass of gradient descent on the neural network
 
         Arguments:
-        - X: Input data.
-        - Y: Correct labels.
-        - A1: Hidden layer activations.
-        - A2: Output layer activations.
-        - alpha: Learning rate.
+          - X (numpy.ndarray): input data (shape: m x nx)
+          - Y (numpy.ndarray): correct labels (shape: 1 x m)
+          - A1 (numpy.ndarray): activated output of the hidden layer
+          - A2 (numpy.ndarray): activated output of the output neuron
+          - alpha (float): learning rate
 
-        Returns:
-        - None
+        Updates:
+          Updates the neural network's weights and biases
         """
+
         m = Y.shape[1]
+
+        # Backpropagation for output layer
         dZ2 = A2 - Y
-        dW2 = (1 / m) * np.matmul(dZ2, A1.T)
-        db2 = (1 / m) * np.sum(dZ2, axis=1, keepdims=True)
+        dW2 = np.matmul(dZ2, A1.T) / m
+        db2 = np.sum(dZ2, axis=1, keepdims=True) / m
 
-        dZ1 = np.matmul(self.__W2.T, dZ2)
-        dZ1 *= A1 * (1 - A1)
-        dW1 = (1 / m) * np.matmul(dZ1, X.T)
-        db1 = (1 / m) * np.sum(dZ1, axis=1, keepdims=True)
+        # Backpropagation for hidden layer
+        dZ1 = np.matmul(self.W2.T, dZ2) * (A1 * (1 - A1))
+        dW1 = np.matmul(dZ1, X) / m
+        db1 = np.sum(dZ1, axis=1, keepdims=True) / m
 
-        self.__W1 -= alpha * dW1
-        self.__b1 -= alpha * db1
-        self.__W2 -= alpha * dW2
-        self.__b2 -= alpha * db2
-
-    def train(self, X, Y, iterations=5000, alpha=0.05):
-        """
-        Train the neural network.
-
-        Arguments:
-        - X: Input data.
-        - Y: Correct labels.
-        - iterations: Number of iterations to train over.
-        - alpha: Learning rate.
-
-        Returns:
-        - The evaluation of the training data after training.
-        """
-        if not isinstance(iterations, int):
-            raise TypeError("iterations must be an integer")
-        if iterations <= 0:
-            raise ValueError("iterations must be a positive integer")
-        if not isinstance(alpha, float):
-            raise TypeError("alpha must be a float")
-        if alpha <= 0:
-            raise ValueError("alpha must be positive")
-
-        for i in range(iterations):
-            A1, A2 = self.forward_prop(X)
-            self.gradient_descent(X, Y, A1, A2, alpha)
-
-        return self.evaluate(X, Y)
+        # Update weights and biases
+        self.W1 -= alpha * dW1
+        self.b1 -= alpha * db1
+        self.W2 -= alpha * dW2
+        self.b2 -= alpha * db2
