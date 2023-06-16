@@ -1,128 +1,71 @@
 #!/usr/bin/env python3
-"""
-Module that defines a neural network with one hidden layer
-performing binary classification
-"""
 
 import numpy as np
 
 
 class NeuralNetwork:
-    """
-    NeuralNetwork class
-    """
-
-    def __init__(self, nx, nodes):
+    def __init__(self, input_size, hidden_size):
         """
-        Constructor method
+        Initializes the parameters of the neural network
         """
 
-        self.nx = nx
-        self.nodes = nodes
+        np.random.seed(0)
+        self.W1 = np.random.randn(hidden_size, input_size)
+        self.b1 = np.zeros((hidden_size, 1))
+        self.W2 = np.random.randn(1, hidden_size)
+        self.b2 = 0
 
-        self.__W1 = np.random.randn(self.nodes, self.nx)
-        self.__b1 = np.zeros((self.nodes, 1))
-        self.__A1 = 0
+    def sigmoid(self, Z):
+        """
+        Applies the sigmoid activation function element-wise
+        """
 
-        self.__W2 = np.random.randn(1, self.nodes)
-        self.__b2 = 0
-        self.__A2 = 0
-
-    @property
-    def W1(self):
-        """
-        Getter method for W1
-        """
-        return self.__W1
-
-    @property
-    def b1(self):
-        """
-        Getter method for b1
-        """
-        return self.__b1
-
-    @property
-    def A1(self):
-        """
-        Getter method for A1
-        """
-        return self.__A1
-
-    @property
-    def W2(self):
-        """
-        Getter method for W2
-        """
-        return self.__W2
-
-    @property
-    def b2(self):
-        """
-        Getter method for b2
-        """
-        return self.__b2
-
-    @property
-    def A2(self):
-        """
-        Getter method for A2
-        """
-        return self.__A2
+        return 1 / (1 + np.exp(-Z))
 
     def forward_prop(self, X):
         """
-        Method that calculates the forward propagation
+        Performs forward propagation to calculate the outputs
         """
 
-        self.__A1 = 1 / (1 + np.exp(-(
-            np.matmul(self.__W1, X) + self.__b1)))
-        self.__A2 = 1 / (1 + np.exp(-(
-            np.matmul(self.__W2, self.__A1) + self.__b2)))
+        Z1 = np.dot(self.W1, X) + self.b1
+        A1 = np.tanh(Z1)
+        Z2 = np.dot(self.W2, A1) + self.b2
+        A2 = self.sigmoid(Z2)
 
-        return self.__A1, self.__A2
+        return A1, A2
 
-    def gradient_descent(self, X, Y, A1, A2, alpha=0.05):
+    def backward_prop(self, X, Y, A1, A2):
         """
-        Calculates one pass of gradient descent on the neural network
+        Performs backward propagation to update the parameters
         """
 
-        m = X.shape[1]
+        m = Y.shape[1]
 
         dZ2 = A2 - Y
-        dW2 = np.dot(dZ2, A1.T) / m
-        db2 = np.sum(dZ2, axis=1, keepdims=True) / m
+        dW2 = (1 / m) * np.dot(dZ2, A1.T)
+        db2 = (1 / m) * np.sum(dZ2, axis=1, keepdims=True)
 
-        dZ1 = np.dot(self.__W2.T, dZ2) * (A1 * (1 - A1))
-        dW1 = np.dot(dZ1, X.T) / m
-        db1 = np.sum(dZ1, axis=1, keepdims=True) / m
+        dZ1 = np.dot(self.W2.T, dZ2) * (1 - np.power(A1, 2))
+        dW1 = (1 / m) * np.dot(dZ1, X.T)
+        db1 = (1 / m) * np.sum(dZ1, axis=1, keepdims=True)
 
-        self.__W2 -= alpha * dW2
-        self.__b2 -= alpha * db2
-        self.__b1 -= alpha * db1
+        return dW1, db1, dW2, db2
 
-    def train(self, X, Y, iterations=5000, alpha=0.05):
+    def train(self, X, Y, iterations=1000, alpha=0.01):
         """
-        Trains the neural network
+        Trains the neural network on the given data
         """
-
-        if not isinstance(iterations, int):
-            raise TypeError("iterations must be an integer")
-        if iterations <= 0:
-            raise ValueError("iterations must be a positive integer")
-        if not isinstance(alpha, float):
-            raise TypeError("alpha must be a float")
-        if alpha <= 0:
-            raise ValueError("alpha must be positive")
 
         for i in range(iterations):
-            _, A2 = self.forward_prop(X)
-            self.gradient_descent(X, Y, self.__A1, A2, alpha)
+            A1, A2 = self.forward_prop(X)
+            dW1, db1, dW2, db2 = self.backward_prop(X, Y, A1, A2)
 
-            _, cost = self.forward_prop(X)
-            cost = np.squeeze(cost)
-            predictions = np.where(self.__A2 >= 0.5, 1, 0)
-            accuracy = np.mean(predictions == Y) * 100
+            self.W1 -= alpha * dW1
+            self.b1 -= alpha * db1
+            self.W2 -= alpha * dW2
+            self.b2 -= alpha * db2
+
+        predictions, cost, accuracy = self.evaluate(X, Y)
 
         return predictions, cost, accuracy
 
@@ -133,16 +76,17 @@ class NeuralNetwork:
 
         A1, A2 = self.forward_prop(X)
         cost = self.cost(Y, A2)
-        predictions = np.where(A2 >= 0.5, 1, 0)
+        predictions = np.round(A2)
+        accuracy = np.mean(predictions == Y) * 100
 
-        return predictions, cost
+        return predictions, cost, accuracy
 
     def cost(self, Y, A):
         """
-        Calculates the cost of the model using logistic regression
+        Calculates the cross-entropy cost
         """
 
         m = Y.shape[1]
-        cost = (-1 / m) * np.sum(Y * np.log(A) + (1 - Y) * np.log(1 - A))
+        cost = -1 / m * (np.dot(Y, np.log(A).T) + np.dot(1 - Y, np.log(1 - A).T))
 
-        return cost
+        return np.squeeze(cost)
