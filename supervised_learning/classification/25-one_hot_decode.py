@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
-""" hot encode """
+"""One Hot Encode"""
 import numpy as np
 
 
 def one_hot_decode(one_hot):
-    """ decode hot"""
-    if type(one_hot) is not np.ndarray or one_hot.shape < (2, 2):
+    """
+    - Converts a one-hot matrix into a vector of labels.
+    - one_hot is a one-hot encoded numpy.ndarray with shape (classes, m),
+    classes is the maximum number of classes and m is the number of examples.
+    - Returns: a numpy.ndarray with shape (m, ) containing the numeric
+    labels for each example, or None on failure.
+    """
+    if (type(one_hot) != np.ndarray or len(one_hot.shape) != 2 or
+            len(one_hot) == 0):
         return None
-    try:
-        return np.argmax(one_hot.T, axis=1)
-    except Exception:
-        return None
+    decode = np.argmax(one_hot, axis=0)
+    return decode
