@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Deep Neural Network"""
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class DeepNeuralNetwork():
@@ -130,7 +131,8 @@ class DeepNeuralNetwork():
             self.__weights["b" + str(i)] = self.__weights[
                     "b" + str(i)] - (alpha * db)
 
-    def train(self, X, Y, iterations=5000, alpha=0.05):
+    def train(self, X, Y, iterations=5000, alpha=0.05, verbose=True,
+              graph=True, step=100):
         """
         - Trains the deep neural network.
         - X is a numpy.ndarray with shape (nx, m)
@@ -150,8 +152,23 @@ class DeepNeuralNetwork():
         if alpha <= 0:
             raise ValueError("alpha must be positive")
 
-        for i in range(0, iterations):
-            self.forward_prop(X)
-            self.gradient_descent(Y, self.cache, alpha)
+        cst = []
+        it = []
+        for epoc in range(0, iterations):
+            A, self.__cache = self.forward_prop(X)
+            self.gradient_descent(Y, self.__cache, alpha)
+            c = self.cost(Y, A)
+            cst.append(c)
+            it.append(epoc)
+            if verbose and epoc % step == 0:
+                print("Cost after {} iterations: {}".format(epoc, c))
+        if verbose and (epoc + 1) % step == 0:
+            print("Cost after {} iterations: {}".format(epoc + 1, c))
+        if graph:
+            plt.title("Training Cost")
+            plt.xlabel("iteration")
+            plt.ylabel("cost")
+            plt.plot(it, cst, 'b-')
+            plt.show()
 
         return self.evaluate(X, Y)
