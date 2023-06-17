@@ -1,47 +1,55 @@
 #!/usr/bin/env python3
-""" Deep Neural Network"""
+"""Deep Neural Network"""
 import numpy as np
 
 
-class DeepNeuralNetwork:
-    """ creating deepNN class"""
+class DeepNeuralNetwork():
+    """Deep Neural Network"""
 
     def __init__(self, nx, layers):
-        """ initialize deepNN"""
+        """
+        - Defines a deep neural network performing binary classification
+        - nx is the number of input features.
+        - layers is a list representing the number of nodes in each
+        layer of the network
+        """
         if type(nx) != int:
             raise TypeError("nx must be an integer")
         if nx < 1:
             raise ValueError("nx must be a positive integer")
-        if type(layers) != list or layers == []:
+
+        if type(layers) != list:
             raise TypeError("layers must be a list of positive integers")
+
         self.__L = len(layers)
         self.__cache = {}
-        for x in range(self.L):
-            if layers[x] <= 0:
+        self.__weights = {}
+        for i in range(0, self.L):
+            if layers[i] < 0:
                 raise TypeError("layers must be a list of positive integers")
-            if x == 0:
-                self.__weights = {"W1": np.random.randn(layers[0],
-                                  nx) * np.sqrt(2 / nx),
-                                  "b1": np.zeros((layers[0], 1))}
+            if i == 0:
+                self.__weights["W" + str(i + 1)] = np.random.randn(
+                            layers[i], nx)*np.sqrt(2/(nx))
+                self.__weights["b" + str(i + 1)] = np.zeros((layers[i], 1))
             else:
-                W = "W" + str(x + 1)
-                B = "b" + str(x + 1)
-                self.__weights[W] = np.random.randn(
-                                  layers[x],
-                                  layers[x - 1]) * np.sqrt(2 / layers[x - 1])
-                self.__weights[B] = np.zeros((layers[x], 1))
+                self.__weights["W" + str(i + 1)] = np.random.randn(
+                            layers[i], layers[i-1]) * np.sqrt(2/(layers[i-1]))
+                self.__weights["b" + str(i + 1)] = np.zeros((layers[i], 1))
 
     @property
     def L(self):
-        """ return private w"""
+        """ Get the L (amount of layers)
+        """
         return self.__L
 
     @property
     def cache(self):
-        """ return private b"""
+        """ Get the cache
+        """
         return self.__cache
 
     @property
     def weights(self):
-        """ return private a"""
+        """ Get the weights
+        """
         return self.__weights
