@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import numpy as np
 
+
 class Neuron:
     """ just a solo neuron for binary classification"""
     def __init__(self, nx):
