@@ -2,6 +2,7 @@
 import numpy as np
 
 class Neuron:
+
     def __init__(self, nx):
         """
         Initialize a neuron with random normal weights and a bias.
@@ -22,3 +23,4 @@ class Neuron:
         self.W = np.random.randn(1, nx)
         self.b = 0
         self.A = 0
+        
