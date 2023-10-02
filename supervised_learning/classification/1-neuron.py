@@ -30,17 +30,14 @@ class Neuron:
             b - biases for the neuron
             a - activated output or the prediction"""
 
-    @property
-    def get_weights(self):
+    def W(self):
         """Getter method for __W"""
         return self.__W
     
-    @property
-    def get_bias(self):
+    def b(self):
         """Getter method for __b"""
         return self.__b
 
-    @property
-    def get_activation(self):
+    def A(self):
         """Getter method for __A"""
         return self.__A
