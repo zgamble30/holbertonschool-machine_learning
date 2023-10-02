@@ -4,10 +4,9 @@ import numpy as np
 
 
 class Neuron:
-    """Just a solo neuron for binary classification"""
-
+     """Just a solo neuron for binary classification"""
     def __init__(self, nx):
-        """
+      """
         Initialize a neuron with private attributes.
 
         Parameters:
@@ -16,6 +15,9 @@ class Neuron:
         Raises:
         - TypeError: If nx is not an integer.
         - ValueError: If nx is less than 1.
+            w - weights vector
+            b - biases for the neuron
+            a - activated output or the prediction
         """
         if not isinstance(nx, int):
             raise TypeError("nx must be an integer")
@@ -26,18 +28,17 @@ class Neuron:
         self.__b = 0
         self.__A = 0
 
-        """ w - weights vector
-            b - biases for the neuron
-            a - activated output or the prediction"""
-
+    @property
     def W(self):
-        """Getter method for __W"""
+        """this is the getter for W"""
         return self.__W
 
+    @property
     def b(self):
-        """Getter method for __b"""
+        """this is the getter for b"""
         return self.__b
 
+    @property
     def A(self):
-        """Getter method for __A"""
+        """this is the getter for A"""
         return self.__A
