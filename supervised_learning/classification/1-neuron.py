@@ -25,7 +25,7 @@ class Neuron:
         self.__W = np.random.randn(1, nx)
         self.__b = 0
         self.__A = 0
-        
+
         """ w - weights vector
             b - biases for the neuron
             a - activated output or the prediction"""
@@ -33,7 +33,7 @@ class Neuron:
     def W(self):
         """Getter method for __W"""
         return self.__W
-    
+
     def b(self):
         """Getter method for __b"""
         return self.__b
