@@ -83,7 +83,8 @@ class Neuron:
         - Y: numpy.ndarray with shape (1, m) containing the correct labels.
 
         Returns:
-        - A tuple containing the neuron's prediction (numpy.ndarray with shape (1, m))
+        - A tuple containing the neuron's
+          prediction (numpy.ndarray with shape (1, m))
           and the cost of the network (float).
         """
         A = self.forward_prop(X)
