@@ -100,9 +100,9 @@ class Neuron:
         - X: numpy.ndarray with shape (nx, m) that contains the input data.
              nx is the number of input features to the neuron.
              m is the number of examples.
-        - Y: numpy.ndarray with shape (1, m) 
+        - Y: numpy.ndarray with shape (1, m)
         containing the correct labels for the input data.
-        - A: numpy.ndarray with shape (1, m) 
+        - A: numpy.ndarray with shape (1, m)
         containing the activated output of the neuron for each example.
         - alpha: The learning rate.
 
