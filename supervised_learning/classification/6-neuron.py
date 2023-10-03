@@ -83,7 +83,8 @@ class Neuron:
         - Y: numpy.ndarray with shape (1, m) containing the correct labels.
 
         Returns:
-        - A tuple containing the neuron's prediction (numpy.ndarray with shape (1, m))
+        - A tuple containing the neuron's 
+        prediction (numpy.ndarray with shape (1, m))
           and the cost of the network (float).
         """
         A = self.forward_prop(X)
@@ -99,8 +100,10 @@ class Neuron:
         - X: numpy.ndarray with shape (nx, m) that contains the input data.
              nx is the number of input features to the neuron.
              m is the number of examples.
-        - Y: numpy.ndarray with shape (1, m) containing the correct labels for the input data.
-        - A: numpy.ndarray with shape (1, m) containing the activated output of the neuron for each example.
+        - Y: numpy.ndarray with shape (1, m) 
+        containing the correct labels for the input data.
+        - A: numpy.ndarray with shape (1, m) 
+        containing the activated output of the neuron for each example.
         - alpha: The learning rate.
 
         Updates:
@@ -120,10 +123,12 @@ class Neuron:
         Train the neuron.
 
         Parameters:
-        - X: numpy.ndarray with shape (nx, m) that contains the input data.
+        - X: numpy.ndarray with shape (nx, m) 
+        that contains the input data.
              nx is the number of input features to the neuron.
              m is the number of examples.
-        - Y: numpy.ndarray with shape (1, m) containing the correct labels for the input data.
+        - Y: numpy.ndarray with shape (1, m) 
+        containing the correct labels for the input data.
         - iterations: The number of iterations to train over.
         - alpha: The learning rate.
 
