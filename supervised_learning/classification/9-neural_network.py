@@ -9,17 +9,17 @@ class NeuralNetwork:
     performing binary classification"""
 
     def __init__(self, nx, nodes):
-        """Class constructor to initialize the neural network.
+        """
+        Class constructor.
 
         Args:
-            nx (int): Number of input features.
-            nodes (int): Number of nodes in the hidden layer.
+            - nx (int): Number of input features.
+            - nodes (int): Number of nodes in the hidden layer.
 
         Raises:
-            TypeError: If nx or nodes is not an integer.
-            ValueError: If nx or nodes is less than 1.
+            - TypeError: If nx or nodes is not an integer.
+            - ValueError: If nx or nodes is less than 1.
         """
-        # Validate input types and values
         if type(nx) is not int:
             raise TypeError('nx must be an integer')
         if nx < 1:
@@ -29,40 +29,42 @@ class NeuralNetwork:
         if nodes < 1:
             raise ValueError('nodes must be a positive integer')
 
-        # Initialize weights and biases for the neural network
+        # Initialize weights and biases for the hidden layer
         self.__W1 = np.random.randn(nodes, nx)
         self.__b1 = np.zeros((nodes, 1))
         self.__A1 = 0
+
+        # Initialize weights and biases for the output neuron
         self.__W2 = np.random.randn(1, nodes)
         self.__b2 = 0
         self.__A2 = 0
 
     @property
     def W1(self):
-        """Getter for W1"""
+        """Getter method for W1 (weights of hidden layer)."""
         return self.__W1
 
     @property
     def b1(self):
-        """Getter for b1"""
+        """Getter method for b1 (biases of hidden layer)."""
         return self.__b1
 
     @property
     def A1(self):
-        """Getter for A1"""
+        """Getter method for A1 (activated output of hidden layer)."""
         return self.__A1
 
     @property
     def W2(self):
-        """Getter for W2"""
+        """Getter method for W2 (weights of output neuron)."""
         return self.__W2
 
     @property
     def b2(self):
-        """Getter for b2"""
+        """Getter method for b2 (bias of output neuron)."""
         return self.__b2
 
     @property
     def A2(self):
-        """Getter for A2"""
+        """Getter method for A2 (activated output of output neuron)."""
         return self.__A2
