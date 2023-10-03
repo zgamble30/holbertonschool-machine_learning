@@ -5,7 +5,8 @@ import numpy as np
 
 
 class NeuralNetwork:
-    """Defines a binary classification neural network with a single hidden layer."""
+    """Defines a binary classification neural
+      network with a single hidden layer."""
 
     def __init__(self, nx, nodes):
         """Class constructor"""
@@ -88,5 +89,8 @@ class NeuralNetwork:
         """
         m = Y.shape[1]
         epsilon = 1.0000001
-        cost = -(1 / m) * np.sum(Y * np.log(A + 1e-8) + (1 - Y) * np.log(1 - A + 1e-8))
+        term1 = Y * np.log(A + 1e-8)
+        term2 = (1 - Y) * np.log(1 - A + 1e-8)
+        cost = -(1 / m) * np.sum(term1 + term2)
+
         return cost
