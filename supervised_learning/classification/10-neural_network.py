@@ -1,30 +1,27 @@
 #!/usr/bin/env python3
-"""Neural Network"""
+"""This is a neural network"""
 
 import numpy as np
 
 
 class NeuralNetwork:
-    """Defines a neural network with one hidden layer
-    designed for binary classification tasks."""
+    """Defines a binary classification neural
+    network with a single hidden layer."""
 
     def __init__(self, nx, nodes):
         """Class constructor"""
-        if not isinstance(nx, int):
+        if type(nx) is not int:
             raise TypeError('nx must be an integer')
         if nx < 1:
             raise ValueError('nx must be a positive integer')
-        if not isinstance(nodes, int):
+        if type(nodes) is not int:
             raise TypeError('nodes must be an integer')
         if nodes < 1:
             raise ValueError('nodes must be a positive integer')
 
-        # Initialize weights and biases for the hidden layer
         self.__W1 = np.random.randn(nodes, nx)
         self.__b1 = np.zeros((nodes, 1))
         self.__A1 = 0
-
-        # Initialize weights and biases for the output neuron
         self.__W2 = np.random.randn(1, nodes)
         self.__b2 = 0
         self.__A2 = 0
@@ -60,8 +57,21 @@ class NeuralNetwork:
         return self.__A2
 
     def forward_prop(self, X):
-        """Calculates forward propagation of the neural network"""
-        # Implementation of forward propagation
-        # ...
+        """
+        Calculates the forward propagation of the neural network.
 
-        return self.__A1, self.__A2
+        Args:
+            - X (numpy.ndarray): Input data with shape (nx, m).
+
+        Returns:
+            - Tuple of numpy.ndarray: Activations of hidden and output layers.
+        """
+        # Hidden layer calculation
+        Z1 = np.dot(self.W1, X) + self.b1
+        self.__A1 = 1 / (1 + np.exp(-Z1))
+
+        # Output layer calculation
+        Z2 = np.dot(self.W2, self.A1) + self.b2
+        self.__A2 = 1 / (1 + np.exp(-Z2))
+
+        return self.A1, self.A2
