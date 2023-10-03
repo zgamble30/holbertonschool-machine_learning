@@ -9,40 +9,34 @@ class NeuralNetwork:
     performing binary classification"""
 
     def __init__(self, nx, nodes):
-        """
-        Class constructor to initialize the neural network.
+        """Class constructor"""
+        self.nx = nx
+        self.nodes = nodes
 
-        Args:
-            nx (int): Number of input features.
-            nodes (int): Number of nodes in the hidden layer.
+        self.initialize_weights()
 
-        Raises:
-            TypeError: If nx or nodes is not an integer.
-            ValueError: If nx or nodes is less than 1.
-        """
-        # Check if nx is an integer and positive
-        if not isinstance(nx, int):
+    def initialize_weights(self):
+        """Initializes weights and biases for the neural network"""
+        # Validate input types and values
+        if not isinstance(self.nx, int):
             raise TypeError('nx must be an integer')
-        if nx < 1:
+        if self.nx < 1:
             raise ValueError('nx must be a positive integer')
-
-        # Check if nodes is an integer and positive
-        if not isinstance(nodes, int):
+        if not isinstance(self.nodes, int):
             raise TypeError('nodes must be an integer')
-        if nodes < 1:
+        if self.nodes < 1:
             raise ValueError('nodes must be a positive integer')
 
         # Initialize weights and biases for the hidden layer
-        self.__W1 = np.random.randn(nodes, nx)
-        self.__b1 = np.zeros((nodes, 1))
+        self.__W1 = np.random.randn(self.nodes, self.nx)
+        self.__b1 = np.zeros((self.nodes, 1))
         self.__A1 = 0
 
         # Initialize weights and biases for the output neuron
-        self.__W2 = np.random.randn(1, nodes)
+        self.__W2 = np.random.randn(1, self.nodes)
         self.__b2 = 0
         self.__A2 = 0
 
-    # Getter functions for private attributes
     @property
     def W1(self):
         """Getter for W1"""
