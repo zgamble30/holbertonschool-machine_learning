@@ -90,7 +90,7 @@ class NeuralNetwork:
         m = Y.shape[1]
         epsilon = 1.0000001
         term1 = Y * np.log(A + 1e-8)
-        term2 = (1 - Y) * np.log(1 - A + 1e-8)
+        term2 = (1 - Y) * np.log(1 - A + 1e-10)
         cost = -(1 / m) * np.sum(term1 + term2)
 
         return cost
