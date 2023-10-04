@@ -39,6 +39,7 @@ def one_hot_decode(one_hot_matrix):
     # Return the resulting label vector
     return label_vector
 
+
 """Example usage:
 if __name__ == "__main__":
     import numpy as np
