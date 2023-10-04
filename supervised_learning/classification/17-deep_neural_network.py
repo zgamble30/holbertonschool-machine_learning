@@ -5,12 +5,12 @@ import numpy as np
 
 
 class DeepNeuralNetwork:
-    """Neural Network for Binary Classification"""
+    """Class defining a deep neural network for binary classification."""
 
     @staticmethod
     def initialize_weights(nx, layers):
         """
-        Initialize weights.
+        Initializes weights using the He et al. method.
 
         Args:
             nx (int): Number of input features.
@@ -34,19 +34,29 @@ class DeepNeuralNetwork:
 
     def __init__(self, nx, layers):
         """
-        Neural Network constructor.
+        Class constructor.
 
         Args:
             nx (int): Number of input features.
             layers (list): List representing the number of nodes in each layer.
         """
+        # Check if nx is an integer
         if not isinstance(nx, int):
             raise TypeError('nx must be an integer')
+
+        # Check if nx is a positive integer
         if nx < 1:
             raise ValueError('nx must be a positive integer')
-        if not isinstance(layers, list) or not all(isinstance(i, int) for i in layers) or len(layers) == 0:
+
+        # Check if layers is a list
+        if not isinstance(layers, list):
             raise TypeError('layers must be a list of positive integers')
 
+        # Check if elements in layers are positive integers
+        if not all(isinstance(nodes, int) and nodes > 0 for nodes in layers):
+            raise TypeError('layers must be a list of positive integers')
+
+        # Set private instance attributes
         self.__L = len(layers)
         self.__cache = dict()
         self.__weights = self.initialize_weights(nx, layers)
