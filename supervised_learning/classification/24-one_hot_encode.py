@@ -2,16 +2,20 @@
 """Module for converting numeric labels into a one-hot matrix."""
 import numpy as np
 
+
 def one_hot_encode(labels, num_classes):
     """
     Convert numeric labels into a one-hot matrix.
 
     Args:
-        labels (numpy.ndarray): Numeric label vector with shape (num_examples,).
-        num_classes (int): Maximum number of classes present in labels.
+        labels (numpy.ndarray): Numeric 
+        label vector with shape (num_examples,).
+        num_classes (int): Maximum 
+        number of classes present in labels.
 
     Returns:
-        numpy.ndarray: One-hot encoding of labels with shape (num_classes, num_examples),
+        numpy.ndarray: One-hot encoding of 
+        labels with shape (num_classes, num_examples),
                       or None if the input is invalid.
     """
     # Ensure that labels is a valid numpy array with shape (num_examples,)
