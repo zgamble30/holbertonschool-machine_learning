@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
+"""Deep Neural Network class"""
 import numpy as np
+
 
 # Define the class DeepNeuralNetwork
 class DeepNeuralNetwork:
