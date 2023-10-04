@@ -2,19 +2,23 @@
 """Module for decoding one-hot encoded matrices into labels."""
 import numpy as np
 
+
 def one_hot_decode(one_hot_matrix):
     """
     Convert a one-hot encoded matrix into a vector of class labels.
 
     Args:
-        one_hot_matrix (numpy.ndarray): A matrix with shape (num_classes, num_examples),
+        one_hot_matrix (numpy.ndarray):
+            A matrix with shape (num_classes, num_examples),
             where each column represents a one-hot encoded class.
 
     Returns:
-        numpy.ndarray: A vector with shape (num_examples, ) containing numeric labels,
-            or None if the input is invalid.
+        numpy.ndarray: A vector with shape
+        (num_examples, ) containing numeric labels,
+        or None if the input is invalid.
     """
-    # Check if the input is a valid numpy array with shape (num_classes, num_examples)
+    # Check if the input is a valid numpy
+    # array with shape (num_classes, num_examples)
     if not isinstance(one_hot_matrix, np.ndarray) or one_hot_matrix.ndim != 2:
         return None
 
@@ -53,4 +57,4 @@ if __name__ == "__main__":
     print(one_hot_data)
     print("\nDecoded Labels:")
     print(decoded_labels)
-    """
+"""
