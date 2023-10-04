@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Neural Network"""
+#Neural Network
 
 import numpy as np
 
 class NeuralNetwork:
-    """Defines a neural network with one hidden layer
-    performing binary classification"""
+    #Defines a neural network with one hidden layer
 
     def __init__(self, nx, nodes):
+        
         """
         Class constructor to initialize the neural network.
 
@@ -35,8 +35,7 @@ class NeuralNetwork:
         self.W1 = np.random.randn(nodes, nx)
         self.b1 = np.zeros((nodes, 1))
         self.A1 = 0
-
-        # Initialize weights and biases for the output neuron
         self.W2 = np.random.randn(1, nodes)
         self.b2 = 0
         self.A2 = 0
+        # Initialize weights and biases for the output neuron
