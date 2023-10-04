@@ -5,12 +5,12 @@ import numpy as np
 
 
 class DeepNeuralNetwork:
-    """Class defining a deep neural network for binary classification."""
+    """Neural Network for Binary Classification"""
 
     @staticmethod
     def initialize_weights(nx, layers):
         """
-        Initializes weights using the He et al. method.
+        Initialize weights.
 
         Args:
             nx (int): Number of input features.
@@ -24,17 +24,17 @@ class DeepNeuralNetwork:
             if not isinstance(nodes, int) or nodes < 1:
                 raise TypeError('layers must be a list of positive integers')
             prev_nodes = layers[i - 2] if i > 1 else nx
-            w_part1 = np.random.randn(nodes, prev_nodes)
-            w_part2 = np.sqrt(2 / prev_nodes)
+            weight_matrix = np.random.randn(nodes, prev_nodes)
+            weight_scaling = np.sqrt(2 / prev_nodes)
             weights.update({
                 'b' + str(i): np.zeros((nodes, 1)),
-                'W' + str(i): w_part1 * w_part2
+                'W' + str(i): weight_matrix * weight_scaling
             })
         return weights
 
     def __init__(self, nx, layers):
         """
-        Class constructor.
+        Neural Network constructor.
 
         Args:
             nx (int): Number of input features.
@@ -53,15 +53,15 @@ class DeepNeuralNetwork:
 
     @property
     def L(self):
-        """Getter for L"""
+        """Getter for the number of layers"""
         return self.__L
 
     @property
     def cache(self):
-        """Getter for cache"""
+        """Getter for the cache"""
         return self.__cache
 
     @property
     def weights(self):
-        """Getter for weights"""
+        """Getter for the weights"""
         return self.__weights
