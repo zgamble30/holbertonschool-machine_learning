@@ -92,7 +92,7 @@ class DeepNeuralNetwork:
             b = weights_copy['b' + str(i)]
 
             if i != self.L:
-                dZ = dA * (1 - np.power(AL, 2))
+                dZ = dA * (1 - np.power(A_prev, 2))
             else:
                 dZ = dAL
 
