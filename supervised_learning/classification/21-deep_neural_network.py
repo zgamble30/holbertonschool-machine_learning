@@ -108,28 +108,24 @@ class DeepNeuralNetwork:
 
         Args:
             Y (numpy.ndarray): Correct labels with shape (1, m).
-            cache (dict): Dictionary containing all intermediary values.
+            cache (dict): Dictionary containing all the intermediary values of the network.
             alpha (float): Learning rate.
 
-        Returns:
-            None
+        Updates the private attribute __weights.
         """
         m = Y.shape[1]
-        dz_last = self.__cache['A' + str(self.__L)] - Y
-        for i in range(self.__L, 0, -1):
-            A_key, W_key, b_key = 'A' + str(i - 1), 'W' + str(i), 'b' + str(i)
-            dz = (self.__cache[A_key] * (1 - self.__cache[A_key])) * np.dot(
-                self.__weights[W_key].T, dz_last
-            )
-            dw = np.dot(dz_last, self.__cache[A_key - 1].T) / m
+        dz_last = self.cache['A' + str(self.L)] - Y
+        for i in range(self.L, 0, -1):
+            A_key, A_prev_key, W_key, b_key = 'A' + str(i), 'A' + str(i - 1), 'W' + str(i), 'b' + str(i)
+            dw = np.dot(dz_last, self.cache[A_prev_key].T) / m
             db = np.sum(dz_last, axis=1, keepdims=True) / m
+            dz = np.dot(self.weights[W_key].T, dz_last) * (self.cache[A_key] * (1 - self.cache[A_key]))
             self.__weights[W_key] -= alpha * dw
             self.__weights[b_key] -= alpha * db
             dz_last = dz
 
 
-"""Testing the class
-if __name__ == "__main__":
+"""if __name__ == "__main__":
     lib_train = np.load('../data/Binary_Train.npz')
     X_3D, Y = lib_train['X'], lib_train['Y']
     X = X_3D.reshape((X_3D.shape[0], -1)).T
@@ -137,6 +133,6 @@ if __name__ == "__main__":
     np.random.seed(0)
     deep = DeepNeuralNetwork(X.shape[0], [5, 3, 1])
     A, cache = deep.forward_prop(X)
-    deep.gradient_descent(Y, cache, 0.5)
+    deep.gradient_descent(Y, cache)
     print(deep.weights)
 """
