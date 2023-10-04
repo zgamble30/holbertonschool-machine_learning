@@ -12,20 +12,17 @@ class DeepNeuralNetwork:
             raise TypeError('nx must be an integer')
         if nx < 1:
             raise ValueError('nx must be a positive integer')
-        if type(layers) is not list or not layers or not all(isinstance(i, int) and i > 0 for i in layers):
+        if not all(isinstance(i, int) and i > 0 for i in layers) or not layers:
             raise TypeError('layers must be a list of positive integers')
 
-        self.__L = len(layers)
-        self.__cache = {}
-        self.__weights = {}
-        for l in range(1, self.L + 1):
-            key_W = 'W' + str(l)
-            key_b = 'b' + str(l)
-            if l == 1:
-                self.weights[key_W] = np.random.randn(layers[0], nx) * np.sqrt(2 / nx)
+        self.__L, self.__cache, self.__weights = len(layers), {}, {}
+        for l in range(self.L):
+            W, b = 'W' + str(l + 1), 'b' + str(l + 1)
+            if l == 0:
+                self.weights[W] = np.random.randn(layers[0], nx) * np.sqrt(2 / nx)
             else:
-                self.weights[key_W] = np.random.randn(layers[l - 1], layers[l]) * np.sqrt(2 / layers[l - 1])
-            self.weights[key_b] = np.zeros((layers[l], 1))
+                self.weights[W] = np.random.randn(layers[l], layers[l - 1]) * np.sqrt(2 / layers[l - 1])
+            self.weights[b] = np.zeros((layers[l], 1))
 
     @property
     def L(self):
@@ -44,12 +41,18 @@ class DeepNeuralNetwork:
 
     def forward_prop(self, X):
         """Calculates the forward propagation of the neural network."""
-        self.__cache['A0'] = X
+        self.cache['A0'] = X
         for l in range(1, self.L + 1):
-            key_W = 'W' + str(l)
-            key_b = 'b' + str(l)
-            key_A = 'A' + str(l - 1)
-            key_new_A = 'A' + str(l)
-            Z = np.dot(self.weights[key_W], self.cache[key_A]) + self.weights[key_b]
-            self.cache[key_new_A] = 1 / (1 + np.exp(-Z))
-        return self.cache[key_new_A], self.cache
+            W, b, A, new_A = 'W' + str(l), 'b' + str(l), 'A' + str(l - 1), 'A' + str(l)
+            Z = np.dot(self.weights[W], self.cache[A]) + self.weights[b]
+            self.cache[new_A] = 1 / (1 + np.exp(-Z))
+        return self.cache[new_A], self.cache
+
+if __name__ == "__main__":
+    np.random.seed(0)
+    deep = DeepNeuralNetwork(5, [5, 3, 1])
+    print(deep.cache)
+    print(deep.weights)
+    print(deep.L)
+    deep.L = 10
+    print(deep.L)
