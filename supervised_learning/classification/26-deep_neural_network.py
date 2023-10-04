@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
-"""Implementation of a Deep Neural Network."""
+"""Custom Neural Network Implementation"""
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
 
-
-class CustomNeuralNetwork:
-    """Custom Neural Network Class"""
+class NeuralNetwork:
+    """Neural Network Class"""
     def __init__(self, input_size, hidden_layers):
-        """Initialize the neural network with specified layers."""
+        """Initialize the neural network with given input size and hidden layers."""
         if not isinstance(input_size, int):
             raise TypeError("Input size must be an integer")
         if input_size < 1:
@@ -27,8 +26,8 @@ class CustomNeuralNetwork:
                 weights = np.random.randn(hidden_layers[layer_idx], input_size) * np.sqrt(2 / input_size)
                 self.__weights[f'W{layer_idx + 1}'] = weights
             else:
-                sqrt_val = np.sqrt(2 / hidden_layers[layer_idx - 1])
-                weights = np.random.randn(hidden_layers[layer_idx], hidden_layers[layer_idx - 1]) * sqrt_val
+                jjj = np.sqrt(2 / hidden_layers[layer_idx - 1])
+                weights = np.random.randn(hidden_layers[layer_idx], hidden_layers[layer_idx - 1]) * jjj
                 self.__weights[f'W{layer_idx + 1}'] = weights
             self.__weights[f'b{layer_idx + 1}'] = np.zeros((hidden_layers[layer_idx], 1))
 
@@ -68,11 +67,11 @@ class CustomNeuralNetwork:
         m = Y.shape[1]
         layer_idx = self.__num_layers
 
-        current_activation = cache[f"A{layer_idx}"]
+        current_activation = cache[f'A{layer_idx}']
         dz = current_activation - Y
 
         for current_layer in range(layer_idx, 0, -1):
-            prev_activation = cache[f"A{current_layer - 1}"]
+            prev_activation = cache[f'A{current_layer - 1}']
             weight_matrix = self.__weights[f'W{current_layer}']
             bias_vector = self.__weights[f'b{current_layer}']
 
@@ -107,8 +106,7 @@ class CustomNeuralNetwork:
 
             if verbose:
                 if epoch == 0 or epoch % plot_step == 0:
-                    print("Cost after {} iterations: {}"
-                          .format(epoch, self.compute_cost(Y, predicted_output)))
+                    print(f"Cost after {epoch} iterations: {self.compute_cost(Y, predicted_output)}")
 
             if plot_graph:
                 if epoch == 0 or epoch % plot_step == 0:
@@ -132,7 +130,7 @@ class CustomNeuralNetwork:
         return self.evaluate(X, Y)
 
     def save_model(self, filename):
-        """Save the trained model to a file using pickle."""
+        """Save the model to a file using pickle."""
         if not filename.endswith('.pkl'):
             filename += '.pkl'
 
@@ -141,7 +139,7 @@ class CustomNeuralNetwork:
 
     @staticmethod
     def load_model(filename):
-        """Load a trained model from a file."""
+        """Load a model from a file using pickle."""
         try:
             if not filename.endswith('.pkl'):
                 filename += '.pkl'
@@ -153,15 +151,15 @@ class CustomNeuralNetwork:
 
     @property
     def num_layers(self):
-        """Getter for the number of layers in the neural network."""
+        """Get the number of layers in the neural network."""
         return self.__num_layers
 
     @property
-    def cache_data(self):
-        """Getter for intermediate value cache."""
+    def cache(self):
+        """Get the cached intermediate values."""
         return self.__cache
 
     @property
-    def model_parameters(self):
-        """Getter for the neural network's weights and biases."""
+    def weights(self):
+        """Get the weights of the neural network."""
         return self.__weights
