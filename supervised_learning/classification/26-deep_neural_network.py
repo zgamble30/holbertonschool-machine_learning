@@ -24,12 +24,12 @@ class NeuralNetwork:
         for layer_idx in range(self.__num_layers):
             if layer_idx == 0:
                 weights = np.random.randn(hidden_layers[layer_idx], input_size) * np.sqrt(2 / input_size)
-                self.__weights[f'W{layer_idx + 1}'] = weights
+                self.__weights['W{}'.format(layer_idx + 1)] = weights
             else:
                 jjj = np.sqrt(2 / hidden_layers[layer_idx - 1])
                 weights = np.random.randn(hidden_layers[layer_idx], hidden_layers[layer_idx - 1]) * jjj
-                self.__weights[f'W{layer_idx + 1}'] = weights
-            self.__weights[f'b{layer_idx + 1}'] = np.zeros((hidden_layers[layer_idx], 1))
+                self.__weights['W{}'.format(layer_idx + 1)] = weights
+            self.__weights['b{}'.format(layer_idx + 1)] = np.zeros((hidden_layers[layer_idx], 1))
 
     def forward_propagation(self, X):
         """Perform forward propagation through the neural network."""
@@ -37,11 +37,11 @@ class NeuralNetwork:
         self.__cache['A0'] = X
 
         for layer_idx in range(1, self.__num_layers + 1):
-            weight_matrix = self.__weights[f'W{layer_idx}']
-            bias_vector = self.__weights[f'b{layer_idx}']
+            weight_matrix = self.__weights['W{}'.format(layer_idx)]
+            bias_vector = self.__weights['b{}'.format(layer_idx)]
             linear_output = np.matmul(weight_matrix, activation) + bias_vector
             activation = self.sigmoid(linear_output)
-            self.__cache[f'A{layer_idx}'] = activation
+            self.__cache['A{}'.format(layer_idx)] = activation
 
         return activation, self.__cache
 
@@ -67,20 +67,20 @@ class NeuralNetwork:
         m = Y.shape[1]
         layer_idx = self.__num_layers
 
-        current_activation = cache[f'A{layer_idx}']
+        current_activation = cache['A{}'.format(layer_idx)]
         dz = current_activation - Y
 
         for current_layer in range(layer_idx, 0, -1):
-            prev_activation = cache[f'A{current_layer - 1}']
-            weight_matrix = self.__weights[f'W{current_layer}']
-            bias_vector = self.__weights[f'b{current_layer}']
+            prev_activation = cache['A{}'.format(current_layer - 1)]
+            weight_matrix = self.__weights['W{}'.format(current_layer)]
+            bias_vector = self.__weights['b{}'.format(current_layer)]
 
             dw = (1 / m) * np.matmul(dz, prev_activation.T)
             db = (1 / m) * np.sum(dz, axis=1, keepdims=True)
             dz = np.matmul(weight_matrix.T, dz)
 
-            self.__weights[f'W{current_layer}'] -= learning_rate * dw
-            self.__weights[f'b{current_layer}'] -= learning_rate * db
+            self.__weights['W{}'.format(current_layer)] -= learning_rate * dw
+            self.__weights['b{}'.format(current_layer)] -= learning_rate * db
 
             if current_layer > 1:
                 dz *= (prev_activation * (1 - prev_activation))
@@ -106,7 +106,8 @@ class NeuralNetwork:
 
             if verbose:
                 if epoch == 0 or epoch % plot_step == 0:
-                    print(f"Cost after {epoch} iterations: {self.compute_cost(Y, predicted_output)}")
+                    print("Cost after {} iterations: {}"
+                          .format(epoch, self.compute_cost(Y, predicted_output)))
 
             if plot_graph:
                 if epoch == 0 or epoch % plot_step == 0:
@@ -129,8 +130,8 @@ class NeuralNetwork:
 
         return self.evaluate(X, Y)
 
-    def save_model(self, filename):
-        """Save the model to a file using pickle."""
+    def save(self, filename):
+        """Save the neural network to a file."""
         if not filename.endswith('.pkl'):
             filename += '.pkl'
 
@@ -138,8 +139,8 @@ class NeuralNetwork:
             pickle.dump(self, file)
 
     @staticmethod
-    def load_model(filename):
-        """Load a model from a file using pickle."""
+    def load(filename):
+        """Load a neural network from a file."""
         try:
             if not filename.endswith('.pkl'):
                 filename += '.pkl'
@@ -151,15 +152,15 @@ class NeuralNetwork:
 
     @property
     def num_layers(self):
-        """Get the number of layers in the neural network."""
+        """Number of layers getter."""
         return self.__num_layers
 
     @property
     def cache(self):
-        """Get the cached intermediate values."""
+        """Intermediate values getter."""
         return self.__cache
 
     @property
     def weights(self):
-        """Get the weights of the neural network."""
+        """Weights getter."""
         return self.__weights
