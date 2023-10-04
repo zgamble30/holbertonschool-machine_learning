@@ -81,20 +81,18 @@ class DeepNeuralNetwork:
         """
 
         m = Y.shape[1]
-        weights_copy = self.__weights.copy()
-        AL = cache['A' + str(self.L)]
-        dAL = AL - Y
         dA = None
 
         for i in reversed(range(1, self.L + 1)):
+            A = cache['A' + str(i)]
             A_prev = cache['A' + str(i - 1)]
-            W = weights_copy['W' + str(i)]
-            b = weights_copy['b' + str(i)]
+            W = self.weights['W' + str(i)]
+            b = self.weights['b' + str(i)]
 
             if i != self.L:
-                dZ = dA * (1 - np.power(AL, 2))
+                dZ = dA * (1 - np.power(A, 2))
             else:
-                dZ = dAL
+                dZ = A - Y
 
             dW = (1 / m) * np.dot(dZ, A_prev.T)
             db = (1 / m) * np.sum(dZ, axis=1, keepdims=True)
@@ -102,8 +100,8 @@ class DeepNeuralNetwork:
             if i - 1 > 0:
                 dA = np.dot(W.T, dZ)
 
-            self.__weights['W' + str(i)] = W - alpha * dW
-            self.__weights['b' + str(i)] = b - alpha * db
+            self.weights['W' + str(i)] -= alpha * dW
+            self.weights['b' + str(i)] -= alpha * db
 
     def train(self, X, Y, iterations=5000, alpha=0.05):
         """
@@ -116,19 +114,54 @@ class DeepNeuralNetwork:
             alpha (float): Learning rate.
 
         Returns:
-            tuple: Evaluation of the training data after iterations of training.
+            tuple: Predictions (A) and the cost of the network.
         """
+
         if not isinstance(iterations, int):
             raise TypeError('iterations must be an integer')
+
         if iterations <= 0:
             raise ValueError('iterations must be a positive integer')
+
         if not isinstance(alpha, float):
             raise TypeError('alpha must be a float')
+
         if alpha <= 0:
             raise ValueError('alpha must be positive')
 
         for _ in range(iterations):
-            AL, cache = self.forward_prop(X)
+            A, cache = self.forward_prop(X)
             self.gradient_descent(Y, cache, alpha)
 
         return self.evaluate(X, Y)
+
+    def cost(self, Y, A):
+        """
+        Calculates the cost of the model using logistic regression.
+
+        Args:
+            Y (numpy.ndarray): Correct labels with shape (1, m).
+            A (numpy.ndarray): Activated output with shape (1, m).
+
+        Returns:
+            float: The cost.
+        """
+        m = Y.shape[1]
+        cost = -np.sum(Y * np.log(A) + (1 - Y) * np.log(1.0000001 - A)) / m
+        return cost
+
+    def evaluate(self, X, Y):
+        """
+        Evaluates the neural network’s predictions.
+
+        Args:
+            X (numpy.ndarray): Input data with shape (nx, m).
+            Y (numpy.ndarray): Correct labels with shape (1, m).
+
+        Returns:
+            tuple: Predictions (A) and the cost of the network.
+        """
+        A, _ = self.forward_prop(X)
+        predictions = np.where(A >= 0.5, 1, 0)
+        cost = self.cost(Y, A)
+        return predictions, cost
