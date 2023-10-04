@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-"""Deep Neural Network class"""
-
 import numpy as np
 
 
@@ -9,8 +6,11 @@ class DeepNeuralNetwork:
 
     def __init__(self, nx, layers):
         """
-        nx is the number of input features.
-        layers is a list representing the number of nodes in each layer.
+        Initialize the DeepNeuralNetwork.
+
+        Args:
+            nx (int): Number of input features.
+            layers (list): List representing the number of nodes in each layer.
         """
 
         self.__L = len(layers)
@@ -30,24 +30,28 @@ class DeepNeuralNetwork:
 
     @property
     def L(self):
-        """Number of layers in the neural network"""
+        """Number of layers in the neural network."""
         return self.__L
 
     @property
     def cache(self):
-        """Intermediary values of the network"""
+        """Intermediary values of the network."""
         return self.__cache
 
     @property
     def weights(self):
-        """Weights and biases of the network"""
+        """Weights and biases of the network."""
         return self.__weights
 
     def forward_prop(self, X):
         """
-        Calculates forward propagation of the neural network
-        X is a numpy.ndarray with shape (nx, m) that contains the input data
-        Returns: output of the neural network and the cache
+        Calculate forward propagation of the neural network.
+
+        Args:
+            X (numpy.ndarray): Input data with shape (nx, m).
+
+        Returns:
+            tuple: Output of the neural network (AL) and the cache dictionary.
         """
 
         self.__cache["A0"] = X
@@ -65,16 +69,19 @@ class DeepNeuralNetwork:
 
     def gradient_descent(self, Y, cache, alpha=0.05):
         """
-        Calculates one pass of gradient descent on the neural network
-        Y is a numpy.ndarray with shape (1, m) that contains the correct labels
-        cache is a dictionary containing all the intermediary values of the network
-        alpha is the learning rate
+        Calculate one pass of gradient descent on the neural network.
+
+        Args:
+            Y (numpy.ndarray): Correct labels with shape (1, m).
+            cache (dict): Dictionary containing all the intermediary values of the network.
+            alpha (float): Learning rate.
         """
 
         m = Y.shape[1]
         weights_copy = self.__weights.copy()
         AL = cache['A' + str(self.L)]
         dAL = AL - Y
+        dA = None
 
         for i in reversed(range(1, self.L + 1)):
             A_prev = cache['A' + str(i - 1)]
