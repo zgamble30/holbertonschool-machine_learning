@@ -8,48 +8,29 @@ def one_hot_decode(one_hot):
 
     Args:
         one_hot (numpy.ndarray): One-hot encoded matrix with shape (num_classes, num_examples).
+            num_classes (int): Maximum number of classes.
+            num_examples (int): Number of examples.
 
     Returns:
         numpy.ndarray: Vector of labels with shape (num_examples, ), or None on failure.
     """
-    # Ensure that one_hot is a valid numpy array
-    if not isinstance(one_hot, np.ndarray):
+    # Ensure that one_hot is a valid numpy array with shape (num_classes, num_examples)
+    if not isinstance(one_hot, np.ndarray) or one_hot.ndim != 2:
         return None
 
-    # Get the number of classes and examples
-    num_classes, num_examples = one_hot.shape
+    # Get the number of examples (num_examples)
+    num_examples = one_hot.shape[1]
 
-    # Check if the shape is valid for one-hot encoding
-    if num_classes <= 0 or num_examples <= 0:
-        return None
+    # Initialize an empty label vector
+    labels = np.zeros((num_examples,), dtype=int)
 
-    # Find the index with the maximum value along the classes axis
-    labels = np.argmax(one_hot, axis=0)
+    # Iterate over the examples
+    for i in range(num_examples):
+        # Find the index of the maximum value in each example (column-wise)
+        max_index = np.argmax(one_hot[:, i])
 
-    # Return the resulting vector of labels
+        # Set the corresponding label to the maximum index
+        labels[i] = max_index
+
+    # Return the resulting label vector
     return labels
-
-"""Example usage:
-if __name__ == "__main__":
-    import numpy as np
-
-    # Load data (replace this with your own data)
-    label_data = np.array([5, 0, 4, 1, 9, 2, 1, 3, 1, 4])
-
-    # Number of classes (replace this with the actual number of classes in your data)
-    num_classes = 10
-
-    # Perform one-hot encoding
-    one_hot_result = oh_encode(label_data, num_classes)
-
-    # Perform one-hot decoding
-    decoded_labels = one_hot_decode(one_hot_result)
-
-    # Print results
-    print("Original Labels:")
-    print(label_data)
-    print("\nOne-Hot Encoding:")
-    print(one_hot_result)
-    print("\nDecoded Labels:")
-    print(decoded_labels)
-""""
