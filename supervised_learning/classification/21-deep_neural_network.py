@@ -3,17 +3,18 @@ import numpy as np
 
 class DeepNeuralNetwork:
     """Deep Neural Network class"""
-  
+
     def __init__(self, nx, layers):
         """Class constructor"""
-        
+
         self.__L = len(layers)
         self.__cache = {}
         self.__weights = {}
         for i in range(self.__L):
             if not isinstance(layers[i], int) or layers[i] < 1:
                 raise TypeError('layers must be a list of positive integers')
-            self.__weights["W" + str(i + 1)] = np.random.randn(layers[i], nx) * np.sqrt(2 / nx)
+            self.__weights["W" + str(i + 1)] = np.random.randn(
+                layers[i], nx) * np.sqrt(2 / nx)
             self.__weights["b" + str(i + 1)] = np.zeros((layers[i], 1))
             nx = layers[i]
 
@@ -36,7 +37,9 @@ class DeepNeuralNetwork:
         """Calculates the forward propagation of the neural network"""
         self.__cache["A0"] = X
         for i in range(1, self.__L + 1):
-            Z = np.matmul(self.__weights["W" + str(i)], self.__cache["A" + str(i - 1)]) + self.__weights["b" + str(i)]
+            Z = np.matmul(
+                self.__weights["W" + str(i)],
+                self.__cache["A" + str(i - 1)]) + self.__weights["b" + str(i)]
             self.__cache["A" + str(i)] = 1 / (1 + np.exp(-Z))
         return self.__cache["A" + str(self.__L)], self.__cache
 
@@ -45,17 +48,13 @@ class DeepNeuralNetwork:
         m = Y.shape[1]
         weights_copy = self.__weights.copy()
         for i in reversed(range(self.L)):
-            A = cache['A' + str(i + 1)]
-            A_prev = cache['A' + str(i)]
-            weights = weights_copy['W' + str(i + 1)]
-            biases = weights_copy['b' + str(i + 1)]
             if i == self.L - 1:
-                dz = A - Y
-                dw = (1 / m) * np.dot(dz, A_prev.T)
+                dz = cache['A' + str(i + 1)] - Y
             else:
-                da = np.dot(weights.T, dz)
-                dz = da * (1 - np.power(A, 2))
-                dw = (1 / m) * np.dot(dz, A_prev.T)
-            db = (1 / m) * np.sum(dz, axis=1, keepdims=True)
-            self.__weights['W' + str(i + 1)] = weights - alpha * dw
-            self.__weights['b' + str(i + 1)] = biases - alpha * db
+                da = np.dot(weights_copy['W' + str(i + 2)].T, dz)
+                dz = da * cache['A' + str(i + 1)] * (
+                    1 - cache['A' + str(i + 1)])
+            dw = np.dot(dz, cache['A' + str(i)].T) / m
+            db = np.sum(dz, axis=1, keepdims=True) / m
+            self.__weights['W' + str(i + 1)] -= alpha * dw
+            self.__weights['b' + str(i + 1)] -= alpha * db
