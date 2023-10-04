@@ -124,7 +124,7 @@ class DeepNeuralNetwork:
 
         Args:
             Y (numpy.ndarray): Correct labels with shape (1, m).
-            cache (dict): Dictionary containing 
+            cache (dict): Dictionary containing
             all the intermediary values of the network.
             alpha (float): Learning rate.
         """
