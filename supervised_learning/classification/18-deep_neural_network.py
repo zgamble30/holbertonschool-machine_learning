@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""This is a deep neural network class"""
+"""Deep Neural Network class"""
 
 import numpy as np
 
@@ -10,7 +10,7 @@ class DeepNeuralNetwork:
     @staticmethod
     def initialize_weights(nx, layers):
         """
-        Initializes weights 
+        Initializes weights using the He et al. method.
 
         Args:
             nx (int): Number of input features.
@@ -94,12 +94,12 @@ if __name__ == "__main__":
 
     np.random.seed(0)
     deep = DeepNeuralNetwork(X.shape[0], [5, 3, 1])
-    deep._DeepNeuralNetwork__weights['b1'] = np.ones((5, 1))
-    deep._DeepNeuralNetwork__weights['b2'] = np.ones((3, 1))
-    deep._DeepNeuralNetwork__weights['b3'] = np.ones((1, 1))
-    A, cache = deep.forward_prop(X)
-    print(A)
-    print(cache)
-    print(cache is deep.cache)
-    print(A is cache['A3'])
+    print(deep.cache)
+    print(deep.weights)
+    print(deep.L)
+    # Attempting to set L should result in an error
+    try:
+        deep.L = 10
+    except AttributeError as e:
+        print(e)
 """
