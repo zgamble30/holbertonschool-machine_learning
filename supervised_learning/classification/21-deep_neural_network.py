@@ -124,7 +124,8 @@ class DeepNeuralNetwork:
 
         Args:
             Y (numpy.ndarray): Correct labels with shape (1, m).
-            cache (dict): Dictionary containing all the intermediary values of the network.
+            cache (dict): Dictionary containing 
+            all the intermediary values of the network.
             alpha (float): Learning rate.
         """
 
@@ -138,7 +139,8 @@ class DeepNeuralNetwork:
             db = (1 / m) * np.sum(dZ, axis=1, keepdims=True)
 
             if i > 1:
-                dZ = np.dot(self.__weights["W" + str(i)].T, dZ) * A_prev * (1 - A_prev)
+                dZ = np.dot(self.__weights["W" + str(i)].T, dZ) \
+                    * A_prev * (1 - A_prev)
 
             self.__weights['W' + str(i)] -= alpha * dW
             self.__weights['b' + str(i)] -= alpha * db
