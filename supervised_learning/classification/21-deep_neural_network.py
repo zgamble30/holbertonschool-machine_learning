@@ -145,7 +145,7 @@ class DeepNeuralNetwork:
             self.weights[W_key] -= alpha * dw
             self.weights[b_key] -= alpha * db
 
-            dz_last = np.dot(self.weights[W_key].T, dz_last) * (self.cache[A_prev_key] * (1 - self.cache[A_prev_key]))
+            dz_last = dz
 
 
 """if __name__ == "__main__":
