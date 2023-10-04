@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-"""Provides a function to convert numeric label vector into a one-hot matrix."""
+"""Provides a function to convert numeric l
+abel vector into a one-hot matrix."""
 import numpy as np
+
 
 def one_hot_encode(Y, classes):
     """
