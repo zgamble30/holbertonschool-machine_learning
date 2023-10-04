@@ -80,7 +80,8 @@ class DeepNeuralNetwork:
         for i in range(1, self.__L + 1):
             W_key, b_key = 'W' + str(i), 'b' + str(i)
             A_key = 'A' + str(i)
-            Z = np.dot(self.__weights[W_key], self.__cache['A' + str(i - 1)]) + self.__weights[b_key]
+            Z = np.dot(self.__weights[W_key], self.__cache['A' + str(i - 1)]) \
+                + self.__weights[b_key]
             activation = 1 / (1 + np.exp(-Z))
             self.__cache[A_key] = activation
 
@@ -110,11 +111,12 @@ class DeepNeuralNetwork:
             Y (numpy.ndarray): Correct labels with shape (1, m).
 
         Returns:
-            tuple: The neuron’s prediction and the cost of the network, respectively.
+            tuple: Predictions (A) and the cost of the network.
         """
         A, _ = self.forward_prop(X)
+        predictions = np.where(A >= 0.5, 1, 0)
         cost = self.cost(Y, A)
-        return np.round(A).astype(int), cost
+        return predictions, cost
 
     def gradient_descent(self, Y, cache, alpha=0.05):
         """
@@ -144,3 +146,16 @@ class DeepNeuralNetwork:
             self.weights[b_key] -= alpha * db
 
             dz_last = dz
+
+
+"""if __name__ == "__main__":
+    lib_train = np.load('../data/Binary_Train.npz')
+    X_3D, Y = lib_train['X'], lib_train['Y']
+    X = X_3D.reshape((X_3D.shape[0], -1)).T
+
+    np.random.seed(0)
+    deep = DeepNeuralNetwork(X.shape[0], [5, 3, 1])
+    A, cache = deep.forward_prop(X)
+    deep.gradient_descent(Y, cache, 0.5)
+    print(deep.weights)
+"""
