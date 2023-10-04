@@ -2,7 +2,6 @@
 """This is a neural network"""
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 class NeuralNetwork:
     """Defines a binary classification neural
