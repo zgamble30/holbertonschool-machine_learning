@@ -20,17 +20,15 @@ class DeepNeuralNetwork:
             dict: Dictionary containing initialized weights and biases.
         """
         weights = dict()
-        for i in range(1, len(layers) + 1):
-            # Check if nodes is an integer and positive
-            if not isinstance(layers[i - 1], int) or layers[i - 1] < 1:
+        for i in range(len(layers)):
+            if not isinstance(layers[i], int) or layers[i] < 1:
                 raise TypeError('layers must be a list of positive integers')
-
-            prev_nodes = nx if i == 1 else layers[i - 2]
-            weight_matrix = np.random.randn(layers[i - 1], prev_nodes)
-            weight_scaling = np.sqrt(2 / prev_nodes)
+            prev_layer = layers[i - 1] if i > 0 else nx
+            w_part1 = np.random.randn(layers[i], prev_layer)
+            w_part2 = np.sqrt(2 / prev_layer)
             weights.update({
-                'b' + str(i): np.zeros((layers[i - 1], 1)),
-                'W' + str(i): weight_matrix * weight_scaling
+                'b' + str(i + 1): np.zeros((layers[i], 1)),
+                'W' + str(i + 1): w_part1 * w_part2
             })
         return weights
 
@@ -42,49 +40,34 @@ class DeepNeuralNetwork:
             nx (int): Number of input features.
             layers (list): List representing the number of nodes in each layer.
         """
-        # Check if nx is an integer
         if not isinstance(nx, int):
             raise TypeError('nx must be an integer')
-
-        # Check if nx is a positive integer
         if nx < 1:
             raise ValueError('nx must be a positive integer')
-
-        # Check if layers is a list
-        if not isinstance(layers, list):
+        if not isinstance(layers, list) or len(layers) == 0:
             raise TypeError('layers must be a list of positive integers')
 
-        # Check if elements in layers are positive integers
-        if not all(isinstance(nodes, int) and nodes > 0 for nodes in layers):
-            raise TypeError('layers must be a list of positive integers')
-
-        # Set private instance attributes
         self.__L = len(layers)
         self.__cache = dict()
         self.__weights = self.initialize_weights(nx, layers)
 
     @property
     def L(self):
-        """Getter for the number of layers"""
+        """Getter for the number of layers."""
         return self.__L
 
     @property
     def cache(self):
-        """Getter for the cache"""
+        """Getter for the cache."""
         return self.__cache
 
     @property
     def weights(self):
-        """Getter for the weights"""
+        """Getter for the weights."""
         return self.__weights
 
-    @L.setter
-    def L(self, value):
-        """Setter for the number of layers"""
-        print("Cannot set L directly. Use the constructor with the desired number of layers.")
 
-
-""" Testing the class
+"""Testing the class
 if __name__ == "__main__":
     lib_train = np.load('../data/Binary_Train.npz')
     X_3D, Y = lib_train['X'], lib_train['Y']
@@ -95,5 +78,9 @@ if __name__ == "__main__":
     print(deep.cache)
     print(deep.weights)
     print(deep.L)
-    deep.L = 10  # This line should print the error message
+    # Attempting to set L should result in an error
+    try:
+        deep.L = 10
+    except AttributeError as e:
+        print(e)
 """
