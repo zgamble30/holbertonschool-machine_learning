@@ -6,7 +6,7 @@ import numpy as np
 
 class NeuralNetwork:
     """Defines a binary classification neural
-      network with a single hidden layer."""
+    network with a single hidden layer."""
 
     def __init__(self, nx, nodes):
         """Class constructor"""
@@ -107,7 +107,7 @@ class NeuralNetwork:
             - Tuple of numpy.ndarray and float: Predicted labels and cost.
         """
         A, _ = self.forward_prop(X)
-        predictions = np.where(A >= 0.5, 1, 0)
+        predictions = (A >= 0.5).astype(int).flatten()  # Convert to (m,) shape
         cost = self.cost(Y, A)
 
         return predictions, cost
