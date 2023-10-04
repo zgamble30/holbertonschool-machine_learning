@@ -3,6 +3,7 @@
 
 import numpy as np
 
+
 class NeuralNetwork:
     """Defines a binary classification neural
       network with a single hidden layer."""
@@ -153,7 +154,8 @@ class NeuralNetwork:
             - alpha (float): Learning rate.
 
         Returns:
-            - Tuple of numpy.ndarray and float: Predicted labels and final cost.
+            - Tuple of numpy.ndarray and f
+            loat: Predicted labels and final cost.
         """
         if type(iterations) is not int:
             raise TypeError('iterations must be an integer')
