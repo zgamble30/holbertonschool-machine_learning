@@ -10,7 +10,7 @@ class DeepNeuralNetwork:
     @staticmethod
     def initialize_weights(nx, layers):
         """
-        Initializes weights
+        Initializes weights using the He et al. method.
 
         Args:
             nx (int): Number of input features.
