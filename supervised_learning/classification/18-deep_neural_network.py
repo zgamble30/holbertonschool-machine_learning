@@ -80,7 +80,8 @@ class DeepNeuralNetwork:
         for i in range(1, self.__L + 1):
             W_key, b_key = 'W' + str(i), 'b' + str(i)
             A_key = 'A' + str(i)
-            Z = np.dot(self.__weights[W_key], self.__cache['A' + str(i - 1)]) + self.__weights[b_key]
+            Z = np.dot(self.__weights[W_key], self.__cache['A' + str(i - 1)]) + \
+            self.__weights[b_key]
             activation = 1 / (1 + np.exp(-Z))
             self.__cache[A_key] = activation
 
