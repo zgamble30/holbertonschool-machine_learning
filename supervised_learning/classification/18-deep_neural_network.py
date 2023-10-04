@@ -86,6 +86,7 @@ class DeepNeuralNetwork:
 
         return self.__cache['A' + str(self.__L)], self.__cache
 
+
 """Testing the class
 if __name__ == "__main__":
     lib_train = np.load('../data/Binary_Train.npz')
