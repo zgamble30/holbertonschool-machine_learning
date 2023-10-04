@@ -20,14 +20,16 @@ class DeepNeuralNetwork:
             dict: Dictionary containing initialized weights and biases.
         """
         weights = dict()
-        for i, nodes in enumerate(layers, start=1):
-            if not isinstance(nodes, int) or nodes < 1:
+        for i in range(1, len(layers) + 1):
+            # Check if nodes is an integer and positive
+            if not isinstance(layers[i - 1], int) or layers[i - 1] < 1:
                 raise TypeError('layers must be a list of positive integers')
-            prev_nodes = layers[i - 2] if i > 1 else nx
-            weight_matrix = np.random.randn(nodes, prev_nodes)
+            
+            prev_nodes = nx if i == 1 else layers[i - 2]
+            weight_matrix = np.random.randn(layers[i - 1], prev_nodes)
             weight_scaling = np.sqrt(2 / prev_nodes)
             weights.update({
-                'b' + str(i): np.zeros((nodes, 1)),
+                'b' + str(i): np.zeros((layers[i - 1], 1)),
                 'W' + str(i): weight_matrix * weight_scaling
             })
         return weights
