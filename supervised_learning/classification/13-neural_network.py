@@ -6,7 +6,7 @@ import numpy as np
 
 class NeuralNetwork:
     """Defines a binary classification neural
-      network with a single hidden layer."""
+    network with a single hidden layer."""
 
     def __init__(self, nx, nodes):
         """Class constructor"""
@@ -142,3 +142,31 @@ class NeuralNetwork:
         self.__b1 -= alpha * db1
         self.__W2 -= alpha * dW2
         self.__b2 -= alpha * db2
+
+    def train(self, X, Y, iterations=5000, alpha=0.05):
+        """
+        Trains the neural network.
+
+        Args:
+            - X (numpy.ndarray): Input data with shape (nx, m).
+            - Y (numpy.ndarray): Correct labels with shape (1, m).
+            - iterations (int): Number of iterations to train over.
+            - alpha (float): Learning rate.
+
+        Returns:
+            - Tuple of numpy.ndarray and float: Predicted labels and cost.
+        """
+        if not isinstance(iterations, int):
+            raise TypeError('iterations must be an integer')
+        if iterations <= 0:
+            raise ValueError('iterations must be a positive integer')
+        if not isinstance(alpha, float):
+            raise TypeError('alpha must be a float')
+        if alpha <= 0:
+            raise ValueError('alpha must be positive')
+
+        for i in range(iterations):
+            A1, A2 = self.forward_prop(X)
+            self.gradient_descent(X, Y, A1, A2, alpha)
+
+        return self.evaluate(X, Y)
