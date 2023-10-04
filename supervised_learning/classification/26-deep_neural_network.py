@@ -2,7 +2,9 @@
 """Deep Neural Network class"""
 
 import numpy as np
-import pickle  # Import the pickle module
+import matplotlib.pyplot as plt
+import pickle
+
 
 class DeepNeuralNetwork:
     """Class defining a deep neural network for binary classification."""
@@ -162,23 +164,14 @@ class DeepNeuralNetwork:
             tuple: Predictions (A) and the cost of the network.
         """
 
-        if not isinstance(iterations, int):
-            raise TypeError('iterations must be an integer')
-
-        if iterations <= 0:
+        if not isinstance(iterations, int) or iterations <= 0:
             raise ValueError('iterations must be a positive integer')
 
-        if not isinstance(alpha, float):
-            raise TypeError('alpha must be a float')
+        if not isinstance(alpha, float) or alpha <= 0:
+            raise ValueError('alpha must be a positive float')
 
-        if alpha <= 0:
-            raise ValueError('alpha must be positive')
-
-        if not isinstance(step, int):
-            raise TypeError('step must be an integer')
-
-        if step <= 0 or step > iterations:
-            raise ValueError('step must be positive and <= iterations')
+        if not isinstance(step, int) or step <= 0 or step > iterations:
+            raise ValueError('step must be a positive integer and <= iterations')
 
         for i in range(iterations + 1):
             A, cache = self.forward_prop(X)
@@ -206,12 +199,12 @@ class DeepNeuralNetwork:
     def save(self, filename):
         """
         Saves the instance object to a file in pickle format.
-
+        
         Args:
             filename (str): The file to which the object should be saved.
         """
-        if not filename.endswith(".pkl"):
-            filename += ".pkl"
+        if not filename.endswith('.pkl'):
+            filename += '.pkl'
         with open(filename, 'wb') as file:
             pickle.dump(self, file)
 
@@ -219,10 +212,10 @@ class DeepNeuralNetwork:
     def load(filename):
         """
         Loads a pickled DeepNeuralNetwork object.
-
+        
         Args:
             filename (str): The file from which the object should be loaded.
-
+            
         Returns:
             DeepNeuralNetwork: The loaded object, or None if filename doesn’t exist.
         """
@@ -233,9 +226,7 @@ class DeepNeuralNetwork:
             return None
 
 
-"""if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-
+if __name__ == "__main__":
     lib_train = np.load('../data/Binary_Train.npz')
     X_train_3D, Y_train = lib_train['X'], lib_train['Y']
     X_train = X_train_3D.reshape((X_train_3D.shape[0], -1)).T
@@ -253,11 +244,3 @@ class DeepNeuralNetwork:
     accuracy = np.sum(A == Y_dev) / Y_dev.shape[1] * 100
     print("Dev cost:", cost)
     print("Dev accuracy: {}%".format(accuracy))
-    deep.save('26-output')
-    del deep
-
-    saved = DeepNeuralNetwork.load('26-output.pkl')
-    A_saved, cost_saved = saved.evaluate(X_train, Y_train)
-
-    print(np.array_equal(A, A_saved) and cost == cost_saved)
-"""
