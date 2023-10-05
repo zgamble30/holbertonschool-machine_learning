@@ -64,7 +64,8 @@ class NeuralNetwork:
             - X (numpy.ndarray): Input data with shape (nx, m).
 
         Returns:
-            - Tuple of numpy.ndarray: Activations of hidden and output layers.
+            - Tuple of numpy.ndarray:
+            Activations of hidden and output layers.
         """
         # Hidden layer calculation
         Z1 = np.dot(self.W1, X) + self.b1
@@ -81,18 +82,16 @@ class NeuralNetwork:
         Calculates the cost of the model using logistic regression.
 
         Args:
-            - Y (numpy.ndarray): Correct labels with shape (1, m).
-            - A (numpy.ndarray): Activated output with shape (1, m).
+            - Y (numpy.ndarray): Correct
+            labels for the input data with shape (1, m).
+            - A (numpy.ndarray): Activated
+            output of the neuron for each example with shape (1, m).
 
         Returns:
-            - float: Cost of the model.
+            - float: The cost of the model.
         """
         m = Y.shape[1]
-        epsilon = 1.0000001
-        term1 = Y * np.log(np.clip(A, 1e-15, 1 - 1e-15))
-        term2 = (1 - Y) * np.log(np.clip(1 - A, 1e-15, 1 - 1e-15))
-        cost = -(1 / m) * np.sum(term1 + term2)
-
+        cost = -1/m * np.sum(Y * np.log(A) + (1 - Y) * np.log(1.0000001 - A))
         return cost
 
     def evaluate(self, X, Y):
@@ -101,13 +100,13 @@ class NeuralNetwork:
 
         Args:
             - X (numpy.ndarray): Input data with shape (nx, m).
-            - Y (numpy.ndarray): Correct labels with shape (1, m).
+            - Y (numpy.ndarray): Correct labels
+            for the input data with shape (1, m).
 
         Returns:
-            - Tuple of numpy.ndarray and float: Predicted labels and cost.
+            - Tuple of numpy.ndarray: The neuron’s
+              prediction and the cost of the network.
         """
-        A, _ = self.forward_prop(X)
-        predictions = (A >= 0.5).astype(int).flatten()  # Convert to (m,) shape
-        cost = self.cost(Y, A)
-
-        return predictions, cost
+        A, cost = self.forward_prop(X), self.cost(Y, self.A2)
+        prediction = np.where(A >= 0.5, 1, 0)
+        return prediction, cost
