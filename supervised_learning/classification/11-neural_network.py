@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 """This is a neural network"""
 
-
 import numpy as np
 
-
 class NeuralNetwork:
-    def __init__(self, n_x, n_h, n_y):
+    def __init__(self, n_x, n_h, n_y=1):
         self.W1 = np.random.randn(n_x, n_h)
         self.b1 = np.zeros((1, n_h))
         self.W2 = np.random.randn(n_h, n_y)
