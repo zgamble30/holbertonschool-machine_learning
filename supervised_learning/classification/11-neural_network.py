@@ -5,6 +5,19 @@ import numpy as np
 
 class NeuralNetwork:
     def __init__(self, n_x, n_h, n_y=1):
+        if type(n_x) is not int:
+            raise TypeError('n_x must be an integer')
+        if n_x < 1:
+            raise ValueError('n_x must be a positive integer')
+        if type(n_h) is not int:
+            raise TypeError('n_h must be an integer')
+        if n_h < 1:
+            raise ValueError('n_h must be a positive integer')
+        if type(n_y) is not int:
+            raise TypeError('n_y must be an integer')
+        if n_y < 1:
+            raise ValueError('n_y must be a positive integer')
+
         self.W1 = np.random.randn(n_x, n_h)
         self.b1 = np.zeros((1, n_h))
         self.W2 = np.random.randn(n_h, n_y)
