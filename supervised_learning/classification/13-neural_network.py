@@ -141,55 +141,18 @@ class NeuralNetwork:
         self.__W1 = self.W1 - alpha * dw1
         self.__b1 = self.b1 - alpha * db1
 
-    def train(self, X, Y, iterations=5000, alpha=0.05):
-        """
-        Trains the neural network.
-
-        Args:
-            - X (numpy.ndarray): Input data with shape (nx, m).
-            - Y (numpy.ndarray): Correct labels for
-              the input data with shape (1, m).
-            - iterations (int): Number of iterations to train over.
-            - alpha (float): Learning rate.
-
-        Returns:
-            - Tuple of numpy.ndarray: The neuron’s
-              prediction and the cost of the network.
-        """
-        if type(iterations) is not int:
-            raise TypeError('iterations must be an integer')
-        if iterations <= 0:
-            raise ValueError('iterations must be a positive integer')
-        if type(alpha) is not float:
-            raise TypeError('alpha must be a float')
-        if alpha <= 0:
-            raise ValueError('alpha must be positive')
-
-        for i in range(iterations):
-            A1, A2 = self.forward_prop(X)
-            self.gradient_descent(X, Y, A1, A2, alpha)
-
-        return self.evaluate(X, Y)
-
 
 """if __name__ == "__main__":
     lib_train = np.load('../data/Binary_Train.npz')
-    X_3D_train, Y_train = lib_train['X'], lib_train['Y']
-    X_train = X_3D_train.reshape((X_3D_train.shape[0], -1)).T
-
-    lib_dev = np.load('../data/Binary_Dev.npz')
-    X_3D_dev, Y_dev = lib_dev['X'], lib_dev['Y']
-    X_dev = X_3D_dev.reshape((X_3D_dev.shape[0], -1)).T
+    X_3D, Y = lib_train['X'], lib_train['Y']
+    X = X_3D.reshape((X_3D.shape[0], -1)).T
 
     np.random.seed(0)
-    nn = NeuralNetwork(X_train.shape[0], 3)
-    A, cost = nn.train(X_train, Y_train, iterations=100)
-    accuracy = np.sum(A == Y_train) / Y_train.shape[1] * 100
-    print("Train cost:", cost)
-    print("Train accuracy: {}%".format(accuracy))
-
-    A, cost = nn.evaluate(X_dev, Y_dev)
-    accuracy = np.sum(A == Y_dev) / Y_dev.shape[1] * 100
-    print("Dev cost:", cost)
-    print("Dev accuracy: {}%".format(accuracy))
+    nn = NeuralNetwork(X.shape[0], 3)
+    A1, A2 = nn.forward_prop(X)
+    nn.gradient_descent(X, Y, A1, A2, 0.5)
+    print(nn.W1)
+    print(nn.b1)
+    print(nn.W2)
+    print(nn.b2)
 """
