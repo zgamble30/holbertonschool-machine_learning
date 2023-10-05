@@ -3,37 +3,90 @@
 
 import numpy as np
 
+
 class NeuralNetwork:
-    def __init__(self, n_x, n_h, n_y=1):
-        if type(n_x) is not int:
-            raise TypeError('n_x must be an integer')
-        if n_x < 1:
-            raise ValueError('n_x must be a positive integer')
-        if type(n_h) is not int:
-            raise TypeError('n_h must be an integer')
-        if n_h < 1:
-            raise ValueError('n_h must be a positive integer')
-        if type(n_y) is not int:
-            raise TypeError('n_y must be an integer')
-        if n_y < 1:
-            raise ValueError('n_y must be a positive integer')
+    """Defines a binary classification neural
+    network with a single hidden layer."""
 
-        self.W1 = np.random.randn(n_x, n_h)
-        self.b1 = np.zeros((1, n_h))
-        self.W2 = np.random.randn(n_h, n_y)
-        self.b2 = np.zeros((1, n_y))
+    def __init__(self, nx, nodes):
+        """Class constructor"""
+        if type(nx) is not int:
+            raise TypeError('nx must be an integer')
+        if nx < 1:
+            raise ValueError('nx must be a positive integer')
+        if type(nodes) is not int:
+            raise TypeError('nodes must be an integer')
+        if nodes < 1:
+            raise ValueError('nodes must be a positive integer')
 
-    def sigmoid(self, x):
-        return 1 / (1 + np.exp(-x))
+        self.__W1 = np.random.randn(nodes, nx)
+        self.__b1 = np.zeros((nodes, 1))
+        self.__A1 = 0
+        self.__W2 = np.random.randn(1, nodes)
+        self.__b2 = 0
+        self.__A2 = 0
+
+    @property
+    def W1(self):
+        """Getter method for W1 (weights of hidden layer)."""
+        return self.__W1
+
+    @property
+    def b1(self):
+        """Getter method for b1 (biases of hidden layer)."""
+        return self.__b1
+
+    @property
+    def A1(self):
+        """Getter method for A1 (activated output of hidden layer)."""
+        return self.__A1
+
+    @property
+    def W2(self):
+        """Getter method for W2 (weights of output neuron)."""
+        return self.__W2
+
+    @property
+    def b2(self):
+        """Getter method for b2 (bias of output neuron)."""
+        return self.__b2
+
+    @property
+    def A2(self):
+        """Getter method for A2 (activated output of output neuron)."""
+        return self.__A2
 
     def forward_prop(self, X):
-        self.Z1 = np.dot(X, self.W1) + self.b1
-        self.A1 = self.sigmoid(self.Z1)
-        self.Z2 = np.dot(self.A1, self.W2) + self.b2
-        self.A2 = self.sigmoid(self.Z2)
+        """
+        Calculates the forward propagation of the neural network.
+
+        Args:
+            - X (numpy.ndarray): Input data with shape (nx, m).
+
+        Returns:
+            - Tuple of numpy.ndarray: Activations of hidden and output layers.
+        """
+        # Hidden layer calculation
+        Z1 = np.dot(self.W1, X) + self.b1
+        self.__A1 = 1 / (1 + np.exp(-Z1))
+
+        # Output layer calculation
+        Z2 = np.dot(self.W2, self.A1) + self.b2
+        self.__A2 = 1 / (1 + np.exp(-Z2))
+
         return self.A1, self.A2
 
     def cost(self, Y, A):
+        """
+        Calculates the cost of the model using logistic regression.
+
+        Args:
+            - Y (numpy.ndarray): Correct labels for the input data with shape (1, m).
+            - A (numpy.ndarray): Activated output of the neuron for each example with shape (1, m).
+
+        Returns:
+            - float: The cost of the model.
+        """
         m = Y.shape[1]
         cost = -1/m * np.sum(Y * np.log(A) + (1 - Y) * np.log(1.0000001 - A))
         return cost
