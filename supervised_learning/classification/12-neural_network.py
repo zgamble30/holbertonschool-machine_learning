@@ -64,8 +64,7 @@ class NeuralNetwork:
             - X (numpy.ndarray): Input data with shape (nx, m).
 
         Returns:
-            - Tuple of numpy.ndarray:
-            Activations of hidden and output layers.
+            - Tuple of numpy.ndarray: Activations of hidden and output layers.
         """
         # Hidden layer calculation
         Z1 = np.dot(self.W1, X) + self.b1
@@ -82,10 +81,8 @@ class NeuralNetwork:
         Calculates the cost of the model using logistic regression.
 
         Args:
-            - Y (numpy.ndarray): Correct
-            labels for the input data with shape (1, m).
-            - A (numpy.ndarray): Activated
-            output of the neuron for each example with shape (1, m).
+            - Y (numpy.ndarray): Correct labels for the input data with shape (1, m).
+            - A (numpy.ndarray): Activated output of the neuron for each example with shape (1, m).
 
         Returns:
             - float: The cost of the model.
@@ -100,13 +97,12 @@ class NeuralNetwork:
 
         Args:
             - X (numpy.ndarray): Input data with shape (nx, m).
-            - Y (numpy.ndarray): Correct labels
-            for the input data with shape (1, m).
+            - Y (numpy.ndarray): Correct labels for the input data with shape (1, m).
 
         Returns:
-            - Tuple of numpy.ndarray: The neuron’s
-              prediction and the cost of the network.
+            - Tuple of numpy.ndarray: The neuron’s prediction and the cost of the network.
         """
-        A, cost = self.forward_prop(X), self.cost(Y, self.A2)
-        prediction = np.where(A >= 0.5, 1, 0)
+        _, A2 = self.forward_prop(X)
+        cost = self.cost(Y, A2)
+        prediction = np.where(A2 >= 0.5, 1, 0)
         return prediction, cost
