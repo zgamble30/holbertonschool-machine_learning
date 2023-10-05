@@ -81,18 +81,16 @@ class NeuralNetwork:
         Calculates the cost of the model using logistic regression.
 
         Args:
-            - Y (numpy.ndarray): Correct labels with shape (1, m).
-            - A (numpy.ndarray): Activated output with shape (1, m).
+            - Y (numpy.ndarray): Correct labels for
+              the input data with shape (1, m).
+            - A (numpy.ndarray): Activated output of
+              the neuron for each example with shape (1, m).
 
         Returns:
-            - float: Cost of the model.
+            - float: The cost of the model.
         """
         m = Y.shape[1]
-        epsilon = 1.0000001
-        term1 = Y * np.log(np.clip(A, 1e-15, 1 - 1e-15))
-        term2 = (1 - Y) * np.log(np.clip(1 - A, 1e-15, 1 - 1e-15))
-        cost = -(1 / m) * np.sum(term1 + term2)
-
+        cost = -1/m * np.sum(Y * np.log(A) + (1 - Y) * np.log(1.0000001 - A))
         return cost
 
     def evaluate(self, X, Y):
@@ -101,16 +99,17 @@ class NeuralNetwork:
 
         Args:
             - X (numpy.ndarray): Input data with shape (nx, m).
-            - Y (numpy.ndarray): Correct labels with shape (1, m).
+            - Y (numpy.ndarray): Correct labels for
+              the input data with shape (1, m).
 
         Returns:
-            - Tuple of numpy.ndarray and float: Predicted labels and cost.
+            - Tuple of numpy.ndarray: The neuron’s
+              prediction and the cost of the network.
         """
-        A, _ = self.forward_prop(X)
-        predictions = np.where(A >= 0.5, 1, 0)
-        cost = self.cost(Y, A)
-
-        return predictions, cost
+        _, A2 = self.forward_prop(X)
+        cost = self.cost(Y, A2)
+        prediction = np.where(A2 >= 0.5, 1, 0)
+        return prediction, cost
 
     def gradient_descent(self, X, Y, A1, A2, alpha=0.05):
         """
@@ -118,7 +117,8 @@ class NeuralNetwork:
 
         Args:
             - X (numpy.ndarray): Input data with shape (nx, m).
-            - Y (numpy.ndarray): Correct labels with shape (1, m).
+            - Y (numpy.ndarray): Correct labels for
+              the input data with shape (1, m).
             - A1 (numpy.ndarray): Output of the hidden layer.
             - A2 (numpy.ndarray): Predicted output.
             - alpha (float): Learning rate.
@@ -128,45 +128,31 @@ class NeuralNetwork:
         """
         m = Y.shape[1]
 
-        # Backward propagation
-        dZ2 = A2 - Y
-        dW2 = (1 / m) * np.dot(dZ2, A1.T)
-        db2 = (1 / m) * np.sum(dZ2, axis=1, keepdims=True)
+        dz2 = A2 - Y
+        dw2 = np.dot(dz2, A1.T) / m
+        db2 = np.sum(dz2, axis=1, keepdims=True) / m
 
-        dZ1 = np.dot(self.W2.T, dZ2) * (A1 * (1 - A1))
-        dW1 = (1 / m) * np.dot(dZ1, X.T)
-        db1 = (1 / m) * np.sum(dZ1, axis=1, keepdims=True)
+        dz1 = np.dot(self.W2.T, dz2) * (A1 * (1 - A1))
+        dw1 = np.dot(dz1, X.T) / m
+        db1 = np.sum(dz1, axis=1, keepdims=True) / m
 
-        # Gradient descent update
-        self.__W1 -= alpha * dW1
-        self.__b1 -= alpha * db1
-        self.__W2 -= alpha * dW2
-        self.__b2 -= alpha * db2
+        self.__W2 = self.W2 - alpha * dw2
+        self.__b2 = self.b2 - alpha * db2
+        self.__W1 = self.W1 - alpha * dw1
+        self.__b1 = self.b1 - alpha * db1
 
-    def train(self, X, Y, iterations=5000, alpha=0.05):
-        """
-        Trains the neural network.
 
-        Args:
-            - X (numpy.ndarray): Input data with shape (nx, m).
-            - Y (numpy.ndarray): Correct labels with shape (1, m).
-            - iterations (int): Number of iterations to train over.
-            - alpha (float): Learning rate.
+"""if __name__ == "__main__":
+    lib_train = np.load('../data/Binary_Train.npz')
+    X_3D, Y = lib_train['X'], lib_train['Y']
+    X = X_3D.reshape((X_3D.shape[0], -1)).T
 
-        Returns:
-            - Tuple of numpy.ndarray and float: Predicted labels and cost.
-        """
-        if not isinstance(iterations, int):
-            raise TypeError('iterations must be an integer')
-        if iterations <= 0:
-            raise ValueError('iterations must be a positive integer')
-        if not isinstance(alpha, float):
-            raise TypeError('alpha must be a float')
-        if alpha <= 0:
-            raise ValueError('alpha must be positive')
-
-        for i in range(iterations):
-            A1, A2 = self.forward_prop(X)
-            self.gradient_descent(X, Y, A1, A2, alpha)
-
-        return self.evaluate(X, Y)
+    np.random.seed(0)
+    nn = NeuralNetwork(X.shape[0], 3)
+    A1, A2 = nn.forward_prop(X)
+    nn.gradient_descent(X, Y, A1, A2, 0.5)
+    print(nn.W1)
+    print(nn.b1)
+    print(nn.W2)
+    print(nn.b2)
+"""
