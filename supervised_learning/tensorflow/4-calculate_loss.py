@@ -17,6 +17,10 @@ def calculate_loss(y, y_pred):
         tf.Tensor: A tensor containing the loss of the prediction.
     """
     # Compute softmax cross-entropy loss
-    loss = tf.losses.softmax_cross_entropy(onehot_labels=y, logits=y_pred, name='softmax_cross_entropy_loss')
+    loss = tf.losses.softmax_cross_entropy(
+        onehot_labels=y,
+        logits=y_pred,
+        name='softmax_cross_entropy_loss'
+    )
 
     return loss
