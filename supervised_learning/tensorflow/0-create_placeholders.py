@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Module containing a function that returns two placeholders for the network."""
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 def create_placeholders(nx, classes):
     """
