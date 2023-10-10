@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
-import tensorflow.compat.v1 as tf
-
+"""Module containing a function that returns two placeholders for the network."""
+import tensorflow as tf
 
 def create_placeholders(nx, classes):
     """
-    Creates two placeholders for a neural network.
+    Creates two placeholders for the neural network.
 
     Args:
         nx (int): The number of feature columns in the data.
         classes (int): The number of classes in the classifier.
 
     Returns:
-        x: The placeholder for the input data.
-        y: The placeholder for the one-hot labels.
+        x (tf.Tensor): The placeholder for the input data.
+        y (tf.Tensor): The placeholder for the one-hot labels.
     """
-    x = tf.placeholder(tf.float32, shape=(None, nx), name='x')
-    y = tf.placeholder(tf.float32, shape=(None, classes), name='y')
-
+    x = tf.placeholder(tf.float32, shape=(None, nx), name="x")
+    y = tf.placeholder(tf.float32, shape=(None, classes), name="y")
     return x, y
