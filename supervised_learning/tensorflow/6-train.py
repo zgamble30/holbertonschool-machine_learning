@@ -3,11 +3,7 @@
 Module containing a function that builds, trains, and saves a neural network classifier.
 """
 
-import numpy as np
 import tensorflow.compat.v1 as tf
-
-
-tf.disable_eager_execution()
 
 def one_hot(Y, classes):
     """Convert an array to a one-hot matrix."""
@@ -109,4 +105,5 @@ def train(X_train, Y_train, X_valid, Y_valid, layer_sizes, activations, alpha, i
     iterations = 1000
 
     save_path = train(X_train, Y_train_oh, X_valid, Y_valid_oh, layer_sizes, activations, alpha, iterations, save_path="./model.ckpt")
-    print(f"Model saved in path: {save_path}")"""
+    print(f"Model saved in path: {save_path}")
+"""
