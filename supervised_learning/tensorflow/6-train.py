@@ -1,72 +1,112 @@
 #!/usr/bin/env python3
-"""Train module"""
+"""
+Module containing a function that builds, trains, and saves a neural network classifier.
+"""
+
+import numpy as np
 import tensorflow.compat.v1 as tf
-from typing import Tuple
 
 
-calculate_accuracy = __import__('3-calculate_accuracy').calculate_accuracy
-calculate_loss = __import__('4-calculate_loss').calculate_loss
-create_placeholders = __import__('0-create_placeholders').create_placeholders
-create_train_op = __import__('5-create_train_op').create_train_op
-forward_prop = __import__('2-forward_prop').forward_prop
+tf.disable_eager_execution()
 
+def one_hot(Y, classes):
+    """Convert an array to a one-hot matrix."""
+    one_hot_matrix = np.zeros((Y.shape[0], classes))
+    one_hot_matrix[np.arange(Y.shape[0]), Y] = 1
+    return one_hot_matrix
 
-def train(X_train: np.ndarray, Y_train: np.ndarray,
-          X_valid: np.ndarray, Y_valid: np.ndarray,
-          layer_sizes: List[int], activations: List[Callable],
-          alpha: float, iterations: int,
-          save_path: str = "/tmp/model.ckpt") -> str:
+def train(X_train, Y_train, X_valid, Y_valid, layer_sizes, activations, alpha, iterations, save_path="/tmp/model.ckpt"):
     """
     Builds, trains, and saves a neural network classifier.
 
     Args:
-        X_train: Numpy.ndarray - Training input data.
-        Y_train: Numpy.ndarray - Training labels.
-        X_valid: Numpy.ndarray - Validation input data.
-        Y_valid: Numpy.ndarray - Validation labels.
-        layer_sizes: List[int] - Number of nodes in each layer.
-        activations: List[Callable] - Activation functions for each layer.
-        alpha: float - Learning rate.
-        iterations: int - Number of iterations to train over.
-        save_path: str - Designates where to save the model.
+        X_train (numpy.ndarray): Training input data.
+        Y_train (numpy.ndarray): Training labels.
+        X_valid (numpy.ndarray): Validation input data.
+        Y_valid (numpy.ndarray): Validation labels.
+        layer_sizes (list): Number of nodes in each layer of the network.
+        activations (list): Activation functions for each layer of the network.
+        alpha (float): Learning rate.
+        iterations (int): Number of iterations to train over.
+        save_path (str): Path to save the model.
 
     Returns:
         str: The path where the model was saved.
     """
-    x, y = create_placeholders(X_train.shape[1], Y_train.shape[1])
-    y_pred = forward_prop(x, layer_sizes, activations)
-    loss = calculate_loss(y, y_pred)
-    accuracy = calculate_accuracy(y, y_pred)
-    train_op = create_train_op(loss, alpha)
+    tf.set_random_seed(0)
+    
+    # Create placeholders
+    x = tf.placeholder(tf.float32, shape=(None, X_train.shape[1]), name="x")
+    y = tf.placeholder(tf.float32, shape=(None, Y_train.shape[1]), name="y")
 
-    tf.add_to_collection('placeholders', x)
-    tf.add_to_collection('placeholders', y)
-    tf.add_to_collection('tensors', y_pred)
-    tf.add_to_collection('tensors', loss)
-    tf.add_to_collection('tensors', accuracy)
-    tf.add_to_collection('operation', train_op)
+    # Forward propagation
+    y_pred = x
+    for i in range(len(layer_sizes)):
+        y_pred = tf.layers.dense(
+            inputs=y_pred,
+            units=layer_sizes[i],
+            activation=activations[i],
+            kernel_initializer=tf.contrib.layers.variance_scaling_initializer(mode="FAN_AVG"),
+            name='layer'
+        )
 
-    init = tf.global_variables_initializer()
-    saver = tf.train.Saver()
+    # Placeholder for the loss
+    loss = tf.losses.softmax_cross_entropy(onehot_labels=y, logits=y_pred)
 
+    # Placeholder for the accuracy
+    accuracy = tf.reduce_mean(tf.cast(tf.math.equal(tf.argmax(y, axis=1), tf.argmax(y_pred, axis=1)), tf.float32))
+
+    # Placeholder for the training operation
+    train_op = tf.train.GradientDescentOptimizer(alpha).minimize(loss)
+
+    # Add placeholders, tensors, and operation to the graph's collection
+    tf.add_to_collection('x', x)
+    tf.add_to_collection('y', y)
+    tf.add_to_collection('y_pred', y_pred)
+    tf.add_to_collection('loss', loss)
+    tf.add_to_collection('accuracy', accuracy)
+    tf.add_to_collection('train_op', train_op)
+
+    # Start training
     with tf.Session() as sess:
-        sess.run(init)
+        sess.run(tf.global_variables_initializer())
 
         for i in range(iterations + 1):
-            cost_train = sess.run(loss, feed_dict={x: X_train, y: Y_train})
-            acc_train = sess.run(accuracy, feed_dict={x: X_train, y: Y_train})
-            cost_valid = sess.run(loss, feed_dict={x: X_valid, y: Y_valid})
-            acc_valid = sess.run(accuracy, feed_dict={x: X_valid, y: Y_valid})
+            # Training
+            _, train_cost, train_accuracy = sess.run([train_op, loss, accuracy], feed_dict={x: X_train, y: Y_train})
 
+            # Validation (every 100 iterations)
             if i % 100 == 0 or i == 0 or i == iterations:
-                print("After {} iterations:".format(i))
-                print("\tTraining Cost: {}".format(cost_train))
-                print("\tTraining Accuracy: {}".format(acc_train))
-                print("\tValidation Cost: {}".format(cost_valid))
-                print("\tValidation Accuracy: {}".format(acc_valid))
+                valid_cost, valid_accuracy = sess.run([loss, accuracy], feed_dict={x: X_valid, y: Y_valid})
+                print(f"After {i} iterations:")
+                print(f"\tTraining Cost: {train_cost}")
+                print(f"\tTraining Accuracy: {train_accuracy}")
+                print(f"\tValidation Cost: {valid_cost}")
+                print(f"\tValidation Accuracy: {valid_accuracy}")
 
-            if i < iterations:
-                sess.run(train_op, feed_dict={x: X_train, y: Y_train})
-
+        # Save the model
+        saver = tf.train.Saver()
         save_path = saver.save(sess, save_path)
-        return save_path
+
+    print(f"Model saved in path: {save_path}")
+    return save_path
+
+
+"""if __name__ == '__main__':
+    lib = np.load('../data/MNIST.npz')
+    X_train_3D = lib['X_train']
+    Y_train = lib['Y_train']
+    X_train = X_train_3D.reshape((X_train_3D.shape[0], -1))
+    Y_train_oh = one_hot(Y_train, 10)
+    X_valid_3D = lib['X_valid']
+    Y_valid = lib['Y_valid']
+    X_valid = X_valid_3D.reshape((X_valid_3D.shape[0], -1))
+    Y_valid_oh = one_hot(Y_valid, 10)
+
+    layer_sizes = [256, 256, 10]
+    activations = [tf.nn.tanh, tf.nn.tanh, None]
+    alpha = 0.01
+    iterations = 1000
+
+    save_path = train(X_train, Y_train_oh, X_valid, Y_valid_oh, layer_sizes, activations, alpha, iterations, save_path="./model.ckpt")
+    print(f"Model saved in path: {save_path}")"""
