@@ -4,6 +4,7 @@ Module containing a function to calculate the softmax cross-entropy loss.
 """
 import tensorflow.compat.v1 as tf
 
+
 def calculate_loss(y, y_pred):
     """
     Calculates the softmax cross-entropy loss of a prediction.
