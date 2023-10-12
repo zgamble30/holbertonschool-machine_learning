@@ -2,6 +2,7 @@
 """Evaluation Station"""
 import tensorflow.compat.v1 as tf
 
+
 def evaluate(X, Y, save_path):
     """
     Evaluates the output of a neural network.
@@ -21,8 +22,8 @@ def evaluate(X, Y, save_path):
     # Forward propagation
     layer = x
     for i in range(len(layer_sizes) - 1):
-        layer = tf.layers.Dense(layer_sizes[i], activation=activations[i], \
-                                kernel_initializer=tf.keras.initializers.VarianceScaling(mode='fan_avg'), \
+        layer = tf.layers.Dense(layer_sizes[i], activation=activations[i],
+                                kernel_initializer=tf.keras.initializers.VarianceScaling(mode='fan_avg'),
                                 name='layer')(layer)
     y_pred = tf.layers.Dense(layer_sizes[-1], activation=None, name='layer')(layer)
 
