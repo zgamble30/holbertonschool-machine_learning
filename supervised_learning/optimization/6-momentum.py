@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Momentum"""
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 
 def create_momentum_op(loss, alpha, beta1):
