@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Moving Average"""
 
+
 def moving_average(data, beta):
     """Calculates the weighted moving average of a data set."""
     m_avg = []
