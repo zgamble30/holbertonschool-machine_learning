@@ -22,7 +22,8 @@ def update_variables_Adam(alpha, beta1, beta2, epsilon, var, grad, v, s, t):
         t: the time step used for bias correction
 
     Returns:
-        tuple: the updated variable, the new first moment, and the new second moment
+        tuple: the updated variable, 
+        the new first moment, and the new second moment
     """
     Vd = beta1 * v + (1 - beta1) * grad
     Sd = beta2 * s + (1 - beta2) * grad**2
