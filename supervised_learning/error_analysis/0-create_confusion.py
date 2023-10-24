@@ -2,6 +2,7 @@
 """create confusion"""
 import numpy as np
 
+
 def create_confusion_matrix(labels, logits):
     """
     Create a confusion matrix from
@@ -27,13 +28,3 @@ def create_confusion_matrix(labels, logits):
         confusion[true_label][predicted_label] += 1
 
     return confusion
-
-# Example usage:
-if __name__ == '__main__':
-    lib = np.load('labels_logits.npz')
-    labels = lib['labels']
-    logits = lib['logits']
-    confusion = create_confusion_matrix(labels, logits)
-    print("Confusion Matrix:")
-    print(confusion)
-    np.savez_compressed('confusion.npz', confusion=confusion)
