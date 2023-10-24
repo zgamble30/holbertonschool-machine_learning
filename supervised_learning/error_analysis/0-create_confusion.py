@@ -1,23 +1,25 @@
 #!/usr/bin/env python3
-"""Create a confusion matrix."""
+"""create confusion"""
 import numpy as np
-
 
 def create_confusion_matrix(labels, logits):
     """
-    Create a confusion matrix.
+    Create a confusion matrix from
+    one-hot encoded labels and predicted logits.
 
     Args:
-        labels: A one-hot numpy.ndarray of
-        shape (m, classes) containing correct labels.
-        logits: A one-hot numpy.ndarray of shape (m, classes)
-        containing predicted labels.
+        labels (numpy.ndarray): One-hot
+        encoded labels (shape: [m, classes]).
+        logits (numpy.ndarray):
+        Predicted logits (shape: [m, classes]).
 
     Returns:
-        A confusion numpy.ndarray of shape (classes, classes).
+        numpy.ndarray: Confusion
+        matrix (shape: [classes, classes]).
     """
     m, classes = labels.shape
-    confusion = np.zeros((classes, classes), dtype=int)
+    confusion = np.zeros((classes, classes), dtype=int)  
+    # Initialize as integer values
 
     for i in range(m):
         true_label = np.argmax(labels[i])
@@ -25,3 +27,13 @@ def create_confusion_matrix(labels, logits):
         confusion[true_label][predicted_label] += 1
 
     return confusion
+
+# Example usage:
+if __name__ == '__main__':
+    lib = np.load('labels_logits.npz')
+    labels = lib['labels']
+    logits = lib['logits']
+    confusion = create_confusion_matrix(labels, logits)
+    print("Confusion Matrix:")
+    print(confusion)
+    np.savez_compressed('confusion.npz', confusion=confusion)
