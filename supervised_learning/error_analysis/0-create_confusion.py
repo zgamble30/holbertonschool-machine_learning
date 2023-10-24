@@ -19,7 +19,7 @@ def create_confusion_matrix(labels, logits):
         matrix (shape: [classes, classes]).
     """
     m, classes = labels.shape
-    confusion = np.zeros((classes, classes), dtype=int)  
+    confusion = np.zeros((classes, classes), dtype=int)
     # Initialize as integer values
 
     for i in range(m):
