@@ -2,26 +2,25 @@
 """creates a confusion matrix"""
 import numpy as np
 
-
-def create_confusion_matrix(labels, logits):
+fusion_matrix(labels, logits):
     """
-    creates a confusion matrix
-    labels: one-hot numpy.ndarray of shape (m, classes)
-        containing the correct labels for each data point
-        m: number of data points
-        classes: number of classes
-    logits: one-hot numpy.ndarray of shape (m, classes)
-        containing the predicted labels
-    Returns a confusion numpy.ndarray of shape (classes, classes)
+    Creates a confusion matrix.
+    Args:
+        labels: one-hot numpy.ndarray of shape (m, classes)
+            containing the correct labels for each data point.
+        logits: one-hot numpy.ndarray of shape (m, classes)
+            containing the predicted labels.
+    Returns:
+        A confusion numpy.ndarray of shape (classes, classes)
+        with row indices representing the correct labels
+        and column indices representing the predicted labels.
     """
-    labelsIndices = np.argmax(labels, axis=1)
-    logitsIndices = np.argmax(logits, axis=1)
+    m, classes = labels.shape
+    confusion_matrix = np.zeros((classes, classes))
 
-    classesCount = labels.shape[1]
+    for i in range(m):
+        true_label = np.argmax(labels[i])
+        predicted_label = np.argmax(logits[i])
+        confusion_matrix[true_label][predicted_label] += 1
 
-    confusionMatrix = np.zeros((classesCount, classesCount), dtype=float)
-
-    for i in range(labels.shape[0]):
-        confusionMatrix[labelsIndices[i], logitsIndices[i]] += 1
-
-    return confusionMatrix
+    return confusion_matrix
