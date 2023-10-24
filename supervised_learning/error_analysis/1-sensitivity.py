@@ -17,7 +17,7 @@ def sensitivity(confusion):
     """
     true_positives = np.diag(confusion)
     actual_positives = np.sum(confusion, axis=1)
-    
+
     sensitivity_values = true_positives / actual_positives
 
     return sensitivity_values
