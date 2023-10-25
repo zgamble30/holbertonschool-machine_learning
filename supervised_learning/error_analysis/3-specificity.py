@@ -2,9 +2,10 @@
 """calculates specificity"""
 import numpy as np
 
+
 def specificity(confusion):
     """
-    Calculates the specificity for each class in a confusion matrix.
+    Calculate the specificity for each class in a confusion matrix.
 
     Args:
         confusion: a numpy.ndarray of shape (classes, classes) where row indices
@@ -18,8 +19,8 @@ def specificity(confusion):
     spec = np.zeros(classes)
 
     for i in range(classes):
-        true_negative = np.sum(np.delete(np.delete(confusion, i, axis=0), i, axis=1))
-        actual_negative = np.sum(np.delete(confusion[i, :], i))
+        true_negative = np.sum(confusion) - np.sum(confusion[i, :]) - np.sum(confusion[:, i]) + confusion[i, i]
+        actual_negative = np.sum(confusion[:, i]) - confusion[i, i]
         spec[i] = true_negative / (true_negative + actual_negative)
 
     return spec
