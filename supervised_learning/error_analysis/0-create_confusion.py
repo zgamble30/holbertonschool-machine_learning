@@ -27,3 +27,13 @@ def create_confusion_matrix(labels, logits):
         confusion_matrix[true_label][predicted_label] += 1
 
     return confusion_matrix
+
+if __name__ == '__main__':
+    lib = np.load('labels_logits.npz', allow_pickle=True)
+    labels = lib['labels']
+    logits = lib['logits']
+
+    np.set_printoptions(suppress=True)
+    confusion = create_confusion_matrix(labels, logits)
+    print(confusion)
+    np.savez_compressed('confusion.npz', confusion=confusion)
