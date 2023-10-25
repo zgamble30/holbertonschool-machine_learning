@@ -8,12 +8,14 @@ import numpy as np
 sensitivity = __import__('1-sensitivity').sensitivity
 precision = __import__('2-precision').precision
 
+
 def f1_score(confusion):
     """
     Calculate the F1 score for each class in a confusion matrix.
 
     Args:
-        confusion (numpy.ndarray): Confusion matrix of shape (classes, classes).
+        confusion (numpy.ndarray):
+        Confusion matrix of shape (classes, classes).
 
     Returns:
         numpy.ndarray: F1 scores for each class.
