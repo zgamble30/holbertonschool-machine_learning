@@ -1,23 +1,28 @@
 #!/usr/bin/env python3
-"""Creates a confusion matrix"""
+"""This script creates a confusion
+matrix using two numpy arrays."""
+
 import numpy as np
 
 
 def create_confusion_matrix(labels, logits):
     """
     Creates a confusion matrix.
-    
-    Args:
-        labels: one-hot numpy.ndarray of shape (m, classes)
-            containing the correct labels for each data point.
-        logits: one-hot numpy.ndarray of shape (m, classes)
-            containing the predicted labels.
-    
+
+    Arguments:
+        labels: A numpy array of one-hot encoded shape (m, classes)
+            that contains the correct labels for each data point.
+        logits: A numpy array of one-hot encoded shape (m, classes)
+            that contains the predicted labels.
+
     Returns:
-        A confusion numpy.ndarray of shape (classes, classes)
-        with row indices representing the correct labels
-        and column indices representing the predicted labels.
+        A confusion matrix in the form of a
+        numpy array with shape (classes, classes).
+        The row indices represent the correct
+        labels, and the column indices
+        represent the predicted labels.
     """
+
     m, classes = labels.shape
     confusion_matrix = np.zeros((classes, classes))
 
