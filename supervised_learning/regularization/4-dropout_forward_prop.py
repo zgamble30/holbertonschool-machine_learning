@@ -1,41 +1,47 @@
 #!/usr/bin/env python3
-"""conducts forward propagation using Dropout"""
+"""Forward Propagation with Dropout"""
 
 import numpy as np
 
 
-def dropout_forward_prop(X, weights, L, keep_prob):
+def dropout_forward_propagation(X, weights, num_layers, keep_prob):
     """
-    Conduct forward propagation using Dropout.
-    
+    Conducts forward propagation using Dropout.
+
     Args:
-        X: numpy.ndarray of shape (nx, m)
-        containing the input data for the network.
-        weights: a dictionary of the weights and biases of the neural network.
-        L: the number of layers in the network.
-        keep_prob: the probability that a node will be kept.
+        X: Input data as a numpy.ndarray of shape (input_size, num_samples).
+        weights: Dictionary containing weights and biases for each layer.
+        num_layers: The number of layers in the neural network.
+        keep_prob: The probability that a node will be kept.
 
     Returns:
-        A dictionary containing the outputs of each
-        layer and the dropout mask used on each layer.
+        A dictionary containing the outputs of
+        each layer and the dropout masks used for each layer.
     """
-    m = X.shape[1]
-    cache = {'A0': X}
-    dropout_masks = {}
+    layer_cache = {}
+    layer_cache["A0"] = X
 
-    for layer in range(1, L + 1):
-        Z = np.dot(weights[f'W{layer}'], cache[f'A{layer - 1}']) + weights[f'b{layer}']
-        if layer != L:
-            A = np.tanh(Z)
-            # Apply dropout
-            dropout_mask = np.random.rand(A.shape[0], A.shape[1]) < keep_prob
-            A *= dropout_mask
-            A /= keep_prob
-            dropout_masks[f'D{layer}'] = dropout_mask
+    for layer in range(1, num_layers + 1):
+        weight_matrix = weights[f"W{layer}"]
+        previous_layer_activation = layer_cache[f"A{layer - 1}"]
+        bias = weights[f"b{layer}"]
+        weighted_sum = np.matmul(weight_matrix, previous_layer_activation) + bias
+
+        if layer == num_layers:
+            softmax_numerator = np.exp(weighted_sum)
+            softmax_denominator = np.sum(softmax_numerator, axis=0)
+            softmax_activation = softmax_numerator / softmax_denominator
+
+            layer_cache[f"A{layer}"] = softmax_activation
         else:
-            exp_Z = np.exp(Z)
-            A = exp_Z / np.sum(exp_Z, axis=0, keepdims=True)
-        cache[f'Z{layer}'] = Z
-        cache[f'A{layer}'] = A
+            numerator = np.exp(weighted_sum) - np.exp(-weighted_sum)
+            denominator = np.exp(weighted_sum) + np.exp(-weighted_sum)
+            tanh_activation = numerator / denominator
+            num_rows, num_cols = tanh_activation.shape
+            dropout_mask = np.random.rand(num_rows, num_cols) < keep_prob
+            layer_cache[f"D{layer}"] = dropout_mask.astype(int)
+            tanh_activation *= dropout_mask
+            tanh_activation /= keep_prob
+            layer_cache[f"A{layer}"] = tanh_activation
 
-    return cache, dropout_masks
+    return layer_cache
