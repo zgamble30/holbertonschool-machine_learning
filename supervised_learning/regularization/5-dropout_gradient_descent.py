@@ -37,7 +37,8 @@ def dropout_gradient_descent(Y, weights, cache, alpha, keep_prob, L):
             W_next = weights[f"W{index + 1}"]
 
             # Calculate the error for hidden layers
-            dz = np.dot(W_next.T, dz_next) * (1 - np.power(A_current, 2))  # tanh derivative
+            dz = np.dot(W_next.T, dz_next) * (1 - np.power(A_current, 2))
+            # tanh derivative
 
             # Apply dropout mask
             dz *= cache[f"D{index}"]
