@@ -23,10 +23,9 @@ def f1_score(confusion):
     f1_scores = np.zeros(classes)
 
     for i in range(classes):
-        sens = sensitivity(confusion, i)  # Calculate sensitivity for class i
-        prec = precision(confusion, i)    # Calculate precision for class i
+        sens = sensitivity(confusion)
+        prec = precision(confusion)
 
-        # Calculate F1 score for class i
-        f1_scores[i] = 2 * (sens * prec) / (sens + prec)
+        f1_scores[i] = 2 * (sens[i] * prec[i]) / (sens[i] + prec[i])
 
     return f1_scores
