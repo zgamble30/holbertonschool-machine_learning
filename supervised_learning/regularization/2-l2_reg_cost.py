@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Calculates the cost of a neural
-network with L2 regularization using TensorFlow"""
+"""Calculates the cost of a neural network
+with L2 regularization using TensorFlow"""
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 
 def l2_reg_cost(cost):
@@ -11,8 +11,8 @@ def l2_reg_cost(cost):
     network with L2 regularization.
 
     Args:
-        cost: A tensor containing the cost
-        of the network without L2 regularization.
+        cost: A tensor containing the
+        cost of the network without L2 regularization.
 
     Returns:
         A tensor containing the cost of the
