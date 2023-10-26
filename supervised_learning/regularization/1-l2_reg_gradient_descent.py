@@ -39,7 +39,7 @@ def l2_reg_gradient_descent(Y, weights, cache,
         # Current layer's activation
         A_previous_layer = cache["A{}".format(layer - 1)]
         # Previous layer's activation
-    
+
         if layer == num_layers:
             dZ = A_current_layer - Y
             # Compute the initial delta for the output layer
