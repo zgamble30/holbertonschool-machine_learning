@@ -2,8 +2,10 @@
 """F1 Score Calculation"""
 
 import numpy as np
-from sensitivity import sensitivity  # Import your sensitivity function
-from precision import precision  # Import your precision function
+
+# Import the sensitivity and precision functions using __import__
+sensitivity = __import__('1-sensitivity').sensitivity
+precision = __import__('2-precision').precision
 
 
 def f1_score(confusion):
@@ -24,6 +26,7 @@ def f1_score(confusion):
         sens = sensitivity(confusion, i)  # Calculate sensitivity for class i
         prec = precision(confusion, i)    # Calculate precision for class i
 
+        # Calculate F1 score for class i
         f1_scores[i] = 2 * (sens * prec) / (sens + prec)
 
     return f1_scores
