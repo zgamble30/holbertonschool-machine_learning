@@ -30,20 +30,25 @@ def dropout_gradient_descent(Y, weights, cache, alpha, keep_prob, L):
         A_current = cache[f"A{index}"]
 
         if index == L:
+            # Calculate the error at the output layer
             back[f"dz{index}"] = (A_current - Y)
-            dz = back[f"dz{index}"]
+            dz = back[f"dz{index"] # Error at the current layer
         else:
             dz_next = back[f"dz{index + 1}"]
             W_next = weights[f"W{index + 1}"]
 
-            # Transpose one of the matrices to ensure compatibility
+            # Calculate the error for hidden layers
             dz = np.dot(W_next.T, dz_next) * (A_current * (1 - A_current))
+
+            # Apply dropout mask
             dz *= cache[f"D{index}"]
             dz /= keep_prob
 
+        # Compute gradients
         dW = (1 / m) * np.dot(dz, cache[f"A{index - 1}"].T)
         db = (1 / m) * np.sum(dz, axis=1, keepdims=True)
 
+        # Update weights and biases
         weights[f"W{index}"] -= alpha * dW
         weights[f"b{index}"] -= alpha * db
 
