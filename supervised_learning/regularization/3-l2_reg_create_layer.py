@@ -15,13 +15,13 @@ def l2_reg_create_layer(prev, n, activation, lambtha):
     Returns:
         The output of the new layer.
     """
-    
+
     # Define an L2 regularization term
     l2_regularizer = tf.keras.regularizers.l2(lambtha)
-    
+
     # Initialize weights using Variance Scaling
     weights_init = tf.keras.initializers.VarianceScaling(scale=2.0, mode="fan_avg")
-    
+
     # Create a dense layer with L2 regularization
     l2_regularized_layer = tf.layers.Dense(
         n,
@@ -30,6 +30,6 @@ def l2_reg_create_layer(prev, n, activation, lambtha):
         kernel_regularizer=l2_regularizer,
         name="custom_layer"
     )
-    
+
     # Apply the layer to the previous layer
     return l2_regularized_layer(prev)
