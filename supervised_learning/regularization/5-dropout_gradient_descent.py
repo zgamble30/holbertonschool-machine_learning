@@ -33,7 +33,7 @@ def dropout_gradient_descent(Y, weights, cache, alpha, keep_prob, L):
             # Calculate the error at the output layer
             back[f"dz{index}"] = (A_current - Y)
             dz = back[f"dz{index}"]  # Error at the current layer
-            
+
         else:
             dz_next = back[f"dz{index + 1}"]
             W_next = weights[f"W{index + 1}"]
