@@ -28,7 +28,7 @@ def dropout_gradient_descent(Y, weights, cache, alpha, keep_prob, L):
 
     for index in range(L, 0, -1):
         A_current = cache[f"A{index}"]
-    
+
         if index == L:
             back[f"dz{index}"] = (A_current - Y)
             dz = back[f"dz{index}"]
