@@ -28,7 +28,7 @@ def l2_reg_gradient_descent(Y, weights, cache, alpha, lambtha, L):
     m = Y.shape[1]
     dAPrevLayer = None
     # Initialize the derivative with respect to the previous layer's activation
-    
+
     for layer in range(L, 0, -1):
         A_cur = cache["A{}".format(layer)]  # Current layer's activation
         A_prev = cache["A{}".format(layer - 1)]  # Previous layer's activation
@@ -44,7 +44,7 @@ def l2_reg_gradient_descent(Y, weights, cache, alpha, lambtha, L):
         db = np.sum(dz, axis=1, keepdims=True) / m
         # Compute the gradient of the biases
         dAPrevLayer = np.matmul(W.T, dz)
-        # Compute the derivative with respect to the previous layer's activation
+        # Compute the derivative with respect to the previous layers activatin
         # Update the weights and biases using the gradient descent rule
         weights["W{}".format(layer)] -= alpha * dW
         weights["b{}".format(layer)] -= alpha * db
