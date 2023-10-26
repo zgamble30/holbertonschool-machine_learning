@@ -1,36 +1,50 @@
 #!/usr/bin/env python3
-"""
-Calculates the gradient of a neural network with L2 regularization
-using gradient descent
-"""
+"""Gradient Descent with L2 Regularization"""
 
 import numpy as np
 
 
 def l2_reg_gradient_descent(Y, weights, cache, alpha, lambtha, L):
     """
-    Updates the weights and biases of a neural network using gradient descent
+    Update the weights and biases of a neural network using gradient descent
     with L2 regularization.
 
     Args:
         Y: One-hot numpy.ndarray of shape (classes, m)
-        weights: Dictionary of the weights and biases of the neural network
-        cache: Dictionary of the outputs of each layer of the neural network
-        alpha: Learning rate
-        lambtha: L2 regularization parameter
-        L: Number of layers of the network
+        that contains the correct labels for the data.
+        weights: Dictionary of the weights and biases of the neural network.
+        cache: Dictionary of the outputs of each layer of the neural network.
+        alpha: Learning rate.
+        lambtha: L2 regularization parameter.
+        L: Number of layers of the network.
+
+    Notes:
+        The neural network uses tanh activations on each layer
+        except the last, which uses a softmax activation.
 
     Returns:
-        None (weights and biases are updated in place)
+        None (weights and biases are updated in place).
     """
     m = Y.shape[1]
-    for i in range(L, 0, -1):
-        A = cache["A" + str(i)]
-        if i == L:
-            dZ = A - Y
+    dAPrevLayer = None
+    # Initialize the derivative with respect to the previous layer's activation
+    
+    for layer in range(L, 0, -1):
+        A_cur = cache["A{}".format(layer)]  # Current layer's activation
+        A_prev = cache["A{}".format(layer - 1)]  # Previous layer's activation
+        if layer == L:
+            dz = A_cur - Y  # Compute the initial delta for the output layer
         else:
-            dZ = np.matmul(weights["W" + str(i + 1)].T, dZ) * (1 - A**2)
-        dW = (1 / m) * np.matmul(dZ, cache["A" + str(i - 1)].T) + (lambtha / m) * weights["W" + str(i)]
-        db = (1 / m) * np.sum(dZ, axis=1, keepdims=True)
-        weights["W" + str(i)] = weights["W" + str(i)] - alpha * dW
-        weights["b" + str(i)] = weights["b" + str(i)] - alpha * db
+            dz = dAPrevLayer * (1 - np.square(A_cur))
+            # Compute delta for hidden layers
+        W = weights["W{}".format(layer)]  # Weights for the current layer
+        l2 = (lambtha / m) * W  # L2 regularization term
+        dW = np.matmul(dz, A_prev.T) / m + l2
+        # Compute the gradient of the weights with L2 regularization
+        db = np.sum(dz, axis=1, keepdims=True) / m
+        # Compute the gradient of the biases
+        dAPrevLayer = np.matmul(W.T, dz)
+        # Compute the derivative with respect to the previous layer's activation
+        # Update the weights and biases using the gradient descent rule
+        weights["W{}".format(layer)] -= alpha * dW
+        weights["b{}".format(layer)] -= alpha * db
