@@ -24,31 +24,27 @@ def dropout_gradient_descent(Y, weights, cache, alpha, keep_prob, L):
         Updated weights and biases.
     """
     m = Y.shape[1]
-    backward_cache = {}
-
+    back = {}
+    
     for index in range(L, 0, -1):
-        A_current = cache[f"A{index - 1}"]
-        A_next = cache[f"A{index}"]
-        W_current = weights[f"W{index}"]
-        dz = None
-
+        A_current = cache[f"A{index}"]
+        
         if index == L:
-            # Output layer
-            dz = A_next - Y
+            back[f"dz{index}"] = (A_current - Y)
+            dz = back[f"dz{index}"]
         else:
-            dz_next = backward_cache[f"dz{index + 1}"]
+            dz_next = back[f"dz{index + 1}"]
             W_next = weights[f"W{index + 1}"]
 
+            # Transpose one of the matrices to ensure compatibility
             dz = np.dot(W_next.T, dz_next) * (A_current * (1 - A_current))
             dz *= cache[f"D{index}"]
             dz /= keep_prob
 
-        dW = np.dot(dz, A_current.T) / m
-        db = np.sum(dz, axis=1, keepdims=True) / m
+        dW = (1 / m) * np.dot(dz, cache[f"A{index - 1}"].T)
+        db = (1 / m) * np.sum(dz, axis=1, keepdims=True)
 
         weights[f"W{index}"] -= alpha * dW
         weights[f"b{index}"] -= alpha * db
-
-        backward_cache[f"dz{index}"] = dz
 
     return weights
