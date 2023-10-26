@@ -4,7 +4,7 @@
 import numpy as np
 
 
-def dropout_forward_propagation(X, weights, num_layers, keep_prob):
+def dropout_forward_prop(X, weights, num_layers, keep_prob):
     """
     Conducts forward propagation using Dropout.
 
