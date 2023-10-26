@@ -22,9 +22,9 @@ def l2_reg_cost(cost, lambtha, weights, L, m):
 
     for i in range(1, L + 1):
         W = weights['W' + str(i)]  # Get the weight matrix for layer i.
-        l2_reg += np.linalg.norm(W)  # Calculate the L2 norm of the weight matrix.
+        l2_reg += np.linalg.norm(W)
 
-    l2_reg = (lambtha / (2 * m)) * l2_reg  # Calculate the L2 regularization term.
+    l2_reg = (lambtha / (2 * m)) * l2_reg
     cost += l2_reg  # Add the regularization term to the cost.
 
     return cost
