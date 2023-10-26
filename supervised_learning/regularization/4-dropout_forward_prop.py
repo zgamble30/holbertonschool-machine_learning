@@ -28,7 +28,6 @@ def dropout_forward_prop(X, weights, num_layers, keep_prob):
         weighted_sum = np.matmul(weight_matrix, previous_layer_activation)
         weighted_sum = weighted_sum + bias
 
-
         if layer == num_layers:
             softmax_numerator = np.exp(weighted_sum)
             softmax_denominator = np.sum(softmax_numerator, axis=0)
