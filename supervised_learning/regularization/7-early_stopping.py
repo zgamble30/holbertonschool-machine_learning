@@ -4,11 +4,11 @@ early stopping determined by gradient descent
 """
 
 
-def early_stopping(current_cost, 
-                  best_cost, 
-                  threshold, 
-                  max_patience, 
-                  patience_count):
+def early_stopping(current_cost,
+                    best_cost,
+                    threshold,
+                    max_patience,
+                    patience_count):
 
     """
     A function utilizing Early Stopping Regularization, The Easiest
