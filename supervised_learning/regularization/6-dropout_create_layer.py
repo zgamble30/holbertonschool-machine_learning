@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""creates layer using dropout"""
 import tensorflow.compat.v1 as tf
 
 
