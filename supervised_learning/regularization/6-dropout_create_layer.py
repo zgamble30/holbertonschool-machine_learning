@@ -1,30 +1,28 @@
 #!/usr/bin/env python3
-"""create neural net using dropout"""
-import tensorflow.compat.v1 as tf
 
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.layers import Dropout
 
-def create_dropout_layer(previous_layer, units, activation, keep_probability):
-    """
-    Creates a layer using dropout.
-
-    Args:
-        previous_layer: The previous layer in the network.
-        units: The number of nodes in the new layer.
-        activation: The activation function for the layer.
-        keep_probability: The probability that a node will be kept (dropout rate).
-
-    Returns:
-        The output layer with dropout regularization.
-    """
-    dropout_rate = 1 - keep_probability
-    dropout_layer = tf.keras.layers.Dropout(rate=dropout_rate)
-    initializer = tf.keras.initializers.VarianceScaling(mode="fan_avg")
+def dropout_create_layer(prev, n, activation, keep_prob):
+    reg = Dropout(rate=keep_prob)
+    init = tf.keras.initializers.VarianceScaling(mode="fan_avg")
 
     layer = tf.keras.layers.Dense(
-        units=units,
+        units=n,
         activation=activation,
-        kernel_regularizer=dropout_layer,
-        kernel_initializer=initializer
-    )(previous_layer)
+        kernel_initializer=init
+    )(prev)
+    output = reg(layer)
 
-    return layer
+    return output
+
+if __name__ == '__main__':
+    tf.random.set_seed(0)
+    np.random.seed(0)
+    x = tf.placeholder(tf.float32, shape=[None, 784])
+    X = np.random.randint(0, 256, size=(10, 784))
+    a = dropout_create_layer(x, 256, tf.nn.tanh, 0.8)
+    with tf.Session() as sess:
+        sess.run(tf.global_variables_initializer())
+        print(sess.run(a, feed_dict={x: X}))
