@@ -3,20 +3,28 @@
 import tensorflow.compat.v1 as tf
 
 
-def dropout_create_layer(prev, n, activation, keep_prob):
+def create_dropout_layer(previous_layer, units, activation, keep_probability):
     """
-    Create a layer of a neural network using dropout.
+    Creates a layer using dropout.
 
     Args:
-        prev: A tensor containing the output of the previous layer.
-        n: The number of nodes the new layer should contain.
-        activation: The activation function to be used on the layer.
-        keep_prob: The probability that a node will be kept.
+        previous_layer: The previous layer in the network.
+        units: The number of nodes in the new layer.
+        activation: The activation function for the layer.
+        keep_probability: The probability that a node will be kept (dropout rate).
 
     Returns:
-        The output of the new layer.
+        The output layer with dropout regularization.
     """
-    init = tf.contrib.layers.variance_scaling_initializer(mode="FAN_AVG")
-    layer = tf.layers.Dense(units=n, activation=activation, kernel_initializer=init)(prev)
-    dropout = tf.layers.Dropout(rate=1 - keep_prob)(layer)
-    return dropout
+    dropout_rate = 1 - keep_probability
+    dropout_layer = tf.keras.layers.Dropout(rate=dropout_rate)
+    initializer = tf.keras.initializers.VarianceScaling(mode="fan_avg")
+
+    layer = tf.keras.layers.Dense(
+        units=units,
+        activation=activation,
+        kernel_regularizer=dropout_layer,
+        kernel_initializer=initializer
+    )(previous_layer)
+
+    return layer
