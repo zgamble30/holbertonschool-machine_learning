@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
-
-import numpy as np
 import tensorflow.compat.v1 as tf
 
 
-tf.set_random_seed(0)
-dropout_create_layer = __import__('6-dropout_create_layer').dropout_create_layer
+def dropout_create_layer(prev, n, activation, keep_prob):
+    """creates layer using dropout"""
+    dropout_rate = 1 - keep_prob
+    dropout_layer = tf.keras.layers.Dropout(rate=dropout_rate)
+    initializer = tf.keras.initializers.VarianceScaling(mode="fan_avg")
 
-if __name__ == '__main__':
-    np.random.seed(0)
-    x = tf.placeholder(tf.float32, shape=[None, 784])
-    X = np.random.randint(0, 256, size=(10, 784))
-    a = dropout_create_layer(x, 256, tf.nn.tanh, 0.8)
-    with tf.Session() as sess:
-        sess.run(tf.global_variables_initializer())
-        print(sess.run(a, feed_dict={x: X}))
+    layer = tf.keras.layers.Dense(
+        units=n,
+        activation=activation,
+        kernel_regularizer=dropout_layer,
+        kernel_initializer=initializer
+    )(prev)
+
+    return layer
