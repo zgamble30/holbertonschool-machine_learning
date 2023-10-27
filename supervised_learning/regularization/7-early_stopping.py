@@ -2,31 +2,17 @@
 """
 early stopping determined by gradient descent
 """
-def early_stopping(cost, opt_cost, threshold, patience, count):
+def early_stopping(current_cost, best_cost, threshold, max_patience, patience_count):
     """
-    Determines if you should stop gradient descent early.
-
-    Args:
-        cost (float): The current validation cost of the neural network.
-        opt_cost (float): The lowest recorded validation cost of the neural network.
-        threshold (float): The threshold used for early stopping.
-        patience (int): The patience count used for early stopping.
-        count (int): The count of how long the threshold has not been met.
-
-    Returns:
-        A tuple (boolean, updated_count) where the boolean indicates whether
-        the network should be stopped early, and updated_count is the updated count.
+    A function utilizing Early Stopping Regularization, The Easiest
+    One To Implement
     """
-
-    # Check if the current cost is greater than the optimal cost plus the threshold
-    if cost > opt_cost + threshold:
-        count += 1
+    if (best_cost - current_cost) > threshold:
+        patience_count = 0
     else:
-        # Reset the count if the cost is below the threshold
-        count = 0
+        patience_count = patience_count + 1
 
-    # Check if the count has reached the patience limit
-    if count >= patience:
-        return True, count
+    if patience_count >= max_patience:
+        return (True, patience_count)
     else:
-        return False, count
+        return (False, patience_count)
