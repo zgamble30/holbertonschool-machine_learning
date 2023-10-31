@@ -26,7 +26,7 @@ def build_model(nx, layers, activations, lambtha, keep_prob):
 
     for i in range(len(layers)):
         layer = K.layers.Dense(units=layers[i], activation=activations[i],
-                                        kernel_regularizer=regularizer)(A)
+                                kernel_regularizer=regularizer)(A)
 
         if i < len(layers) - 1 and keep_prob < 1.0:
             dropout = K.layers.Dropout(1 - keep_prob)(layer)
