@@ -4,10 +4,12 @@ Train Model
 """
 import tensorflow.keras as K
 
-def train_model(network, data, labels, batch_size, epochs, 
+
+def train_model(network, data, labels, batch_size, epochs,
                 validation_data=None, verbose=True, shuffle=False):
     """
-    Trains a model using mini-batch gradient descent with optional validation data.
+    Trains a model using mini-batch gradient
+    descent with optional validation data.
 
     Args:
     - network: the model to train.
@@ -15,8 +17,10 @@ def train_model(network, data, labels, batch_size, epochs,
       containing the input data.
     - labels: a one-hot numpy.ndarray of shape (m, classes)
       containing the labels of data.
-    - batch_size: the size of the batch used for mini-batch gradient descent.
-    - epochs: the number of passes through data for mini-batch gradient descent.
+    - batch_size: the size of the batch
+    used for mini-batch gradient descent.
+    - epochs: the number of passes
+    through data for mini-batch gradient descent.
     - validation_data: a tuple (X_valid, Y_valid)
       containing validation data, where X_valid is the input data
       and Y_valid is the labels for validation. Default is None.
