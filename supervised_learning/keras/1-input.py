@@ -4,6 +4,7 @@ Builds a Keras model with a specified architecture using Input class.
 """
 import tensorflow.keras as K
 
+
 def build_model(nx, layers, activations, lambtha, keep_prob):
     """
     Builds a Keras model with the specified architecture using Input class.
