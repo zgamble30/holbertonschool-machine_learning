@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-
+"""converts label vector"""
 import tensorflow.keras as K
+
 
 def one_hot(labels, classes=None):
     """
