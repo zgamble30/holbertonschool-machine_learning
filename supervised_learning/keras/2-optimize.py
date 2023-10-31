@@ -4,9 +4,11 @@ Sets up Adam optimization for a keras model with categorical crossentropy loss.
 """
 import tensorflow.keras as K
 
+
 def optimize_model(network, alpha, beta1, beta2):
     """
-    Sets up Adam optimization for a keras model with categorical crossentropy loss.
+    Sets up Adam optimization for a keras
+    model with categorical crossentropy loss.
 
     Args:
     - network: the model to optimize.
