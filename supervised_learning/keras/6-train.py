@@ -13,15 +13,15 @@ def train_model(network, data, labels, batch_size, epochs,
     Args:
     - network: the model to train.
     - data: a numpy.ndarray of shape (m, nx) containing the input data.
-    - labels: a one-hot numpy.ndarray of shape
-    (m, classes) containing the labels of data.
+    - labels: a one-hot numpy.ndarray of shape (m, classes)
+      containing the labels of data.
     - batch_size: the size of the batch used for mini-batch gradient descent.
     - epochs: the number of passes through data for mini-batch gradient descent.
-    - validation_data: a tuple (X_valid, Y_valid)
-    containing validation data, where X_valid is the input data
-      and Y_valid is the labels for validation. Default is None.
-    - early_stopping: a boolean that indicates
-    whether early stopping should be used. Default is False.
+    - validation_data: a tuple (X_valid, Y_valid) containing validation data,
+      where X_valid is the input data and Y_valid is the labels for validation.
+      Default is None.
+    - early_stopping: a boolean that indicates whether early stopping should be used.
+      Default is False.
     - patience: the patience used for early stopping. Default is 0.
     - verbose: a boolean that determines if output should be printed during training.
     - shuffle: a boolean that determines whether to shuffle the batches every epoch.
@@ -35,7 +35,8 @@ def train_model(network, data, labels, batch_size, epochs,
 
     callbacks = []
     if early_stopping:
-        early_stopping_callback = K.callbacks.EarlyStopping(monitor='val_loss', patience=patience)
+        early_stopping_callback = K.callbacks.EarlyStopping(
+            monitor='val_loss', patience=patience)
         callbacks.append(early_stopping_callback)
 
     history = network.fit(
