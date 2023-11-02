@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Convolution on Grayscale Images with
+"""Convolution on Multi-Channel Images with
 Padding, Stride, and Same/Valid Options"""
 
 import numpy as np
@@ -46,21 +46,16 @@ def convolve_channels(images, kernel, padding='same', stride=(1, 1)):
     convolved_width = ((image_width + (2 * pw) - kernel_width) // sw) + 1
     convolved_height = ((image_height + (2 * ph) - kernel_height) // sh) + 1
 
-    padded_images = np.pad(
-    images, ((0, 0), (ph, ph), (pw, pw), (0, 0)),
-    'constant'
-    )
-    convolved_matrix = np.zeros(
-        (num_images, convolved_height, convolved_width)
-    )
+    padded_images = np.pad(images, ((0, 0), (ph, ph), (pw, pw), (0, 0)), 'constant')
+    convolved_matrix = np.zeros((num_images, convolved_height, convolved_width)
 
     for i in range(convolved_width):
         for j in range(convolved_height):
             image_section = padded_images[
-                :, sh * j:sh * j + kernel_height, sw * i:sw * i + kernel_width, :
+                :, sh * j:sh * j + kernel_height,
+                sw * i:sw * i + kernel_width, :
             ]
-            convolved_matrix[:, j, i] = np.tensordot(
-                image_section, kernel, axes=3
-            )
+
+            convolved_matrix[:, j, i] = np.tensordot(image_section, kernel, axes=3
 
     return convolved_matrix
