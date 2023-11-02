@@ -4,6 +4,7 @@ Padding, Stride, and Same/Valid Options"""
 
 import numpy as np
 
+
 def convolve_grayscale(images, kernel, padding='same', stride=(1, 1)):
     """
     Perform a convolution on grayscale images with customizable options.
