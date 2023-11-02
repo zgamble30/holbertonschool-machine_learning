@@ -33,9 +33,9 @@ def convolve_channels(images, kernel, padding='same', stride=(1, 1)):
 
     if padding == 'same':
         ph = ((((image_height - 1) * sh)
-                + kernel_height - image_height) // 2) + 1
+        + kernel_height - image_height) // 2) + 1
         pw = ((((image_width - 1) * sw)
-                + kernel_width - image_width) // 2) + 1
+        + kernel_width - image_width) // 2) + 1
     elif padding == 'valid':
         ph = 0
         pw = 0
@@ -45,11 +45,9 @@ def convolve_channels(images, kernel, padding='same', stride=(1, 1)):
     convolved_width = ((image_width + (2 * pw) - kernel_width) // sw) + 1
     convolved_height = ((image_height + (2 * ph) - kernel_height) // sh) + 1
 
-    padded_images = np.pad(
-        images, ((0, 0), (ph, ph), (pw, pw), (0, 0)), 'constant'
-    )
+    padded_images = np.pad(images, ((0, 0), (ph, ph), (pw, pw), (0, 0)), 'constant')
     convolved_matrix = np.zeros(
-        (num_images, convolved_height, convolved_width, num_channels)
+        (num_images, convolved_height, convolved_width)
     )
 
     for i in range(convolved_width):
@@ -57,8 +55,8 @@ def convolve_channels(images, kernel, padding='same', stride=(1, 1)):
             image_section = padded_images[
                 :, sh * j:sh * j + kernel_height, sw * i:sw * i + kernel_width, :
             ]
-            convolved_matrix[:, j, i, :] = np.tensordot(
-                image_section, kernel, axes=([1, 2, 3], [0, 1, 2])
+            convolved_matrix[:, j, i] = np.tensordot(
+                image_section, kernel, axes=3
             )
 
     return convolved_matrix
