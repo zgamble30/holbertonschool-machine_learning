@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-evaluates network
+configs network
 """
 import tensorflow.keras as K
 
