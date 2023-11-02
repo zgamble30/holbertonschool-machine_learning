@@ -1,50 +1,40 @@
 #!/usr/bin/env python3
 """
-configs network
+saves and loads weights
 """
-import tensorflow as tf
+import tensorflow.keras as K
 
 
+# Function to save model weights to a file
 def save_weights(network, filename, save_format='h5'):
     """
     Save the weights of a Keras model to a file.
-    
+
     Args:
-    - network: Keras model whose
-    weights should be saved.
-    - filename: The path of the file
-    where the weights should be saved.
-    - save_format: The format in which
-    the weights should be saved. Default is 'h5'.
-    
+        network (tf.keras.Model): The Keras
+        model whose weights you want to save.
+        filename (str): The name of the file to
+        save the weights to.
+        save_format (str): The format in which
+        to save the weights (default is 'h5').
+
     Returns:
-    - None
+        None
     """
     network.save_weights(filename, save_format=save_format)
 
-
+# Function to load model weights from a file
 def load_weights(network, filename):
     """
     Load weights from a file and set them to a Keras model.
-    
+
     Args:
-    - network: Keras model to which
-    the weights should be loaded.
-    - filename: The path of the file
-    from which the weights should be loaded.
-    
+        network (tf.keras.Model): The Keras
+        model to which you want to load the weights.
+        filename (str): The name of the
+        file containing the weights to be loaded.
+
     Returns:
-    - None
+        None
     """
     network.load_weights(filename)
-
-"""Example usage:
-Assuming you have a Keras model named 'network'
-and you want to save its weights to 'weights2.h5'
-and later load these weights back to another Keras model."""
-
-# Saving weights to a file
-save_weights(network, 'weights2.h5')
-
-# Loading weights from a file
-load_weights(network2, 'weights2.h5')
