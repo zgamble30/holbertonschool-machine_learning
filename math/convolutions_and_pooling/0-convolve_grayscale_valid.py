@@ -8,14 +8,18 @@ def convolve_grayscale_valid(images, kernel):
     Perform a valid convolution on grayscale images using a given kernel.
 
     Args:
-    - images (numpy.ndarray): A collection of grayscale images with shape (num_images, image_height, image_width).
-    - kernel (numpy.ndarray): The convolution kernel with shape (kernel_height, kernel_width).
+    - images (numpy.ndarray): A collection of
+    grayscale images with shape (num_images, image_height, image_width).
+    - kernel (numpy.ndarray): The convolution
+    kernel with shape (kernel_height, kernel_width).
 
     Returns:
     - numpy.ndarray: An array containing the convolved images.
     
-    The function takes a set of grayscale images and a convolution kernel as input.
-    It performs a valid convolution, meaning the output size is reduced compared to the input.
+    The function takes a set of grayscale
+    images and a convolution kernel as input.
+    It performs a valid convolution, meaning the
+    output size is reduced compared to the input.
     The result is a numpy array containing the convolved images.
 
     Example:
