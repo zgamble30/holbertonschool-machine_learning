@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+"""convolve using multiple kernels"""
 import numpy as np
 
 def convolve(images, kernels, padding='same', stride=(1, 1)):
