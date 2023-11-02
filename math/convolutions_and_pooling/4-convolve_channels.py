@@ -55,10 +55,7 @@ def convolve_channels(images, kernel, padding='same', stride=(1, 1)):
     for i in range(convolved_width):
         for j in range(convolved_height):
             image_section = padded_images[
-                :,
-                sh * j:sh * j + kernel_height,
-                sw * i:sw * i + kernel_width,
-                :
+                :, sh * j:sh * j + kernel_height, sw * i:sw * i + kernel_width, :
             ]
             convolved_matrix[:, j, i, :] = np.tensordot(
                 image_section, kernel, axes=([1, 2, 3], [0, 1, 2])
