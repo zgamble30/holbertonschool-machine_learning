@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Convolution on Grayscale Images with Padding, Stride, and Same/Valid Options"""
+"""Convolution on Grayscale Images with
+Padding, Stride, and Same/Valid Options"""
 
 import numpy as np
-
 
 def convolve_grayscale(images, kernel, padding='same', stride=(1, 1)):
     """
@@ -33,9 +33,9 @@ def convolve_grayscale(images, kernel, padding='same', stride=(1, 1)):
 
     if padding == 'same':
         ph = ((((image_height - 1) * sh)
-                + kernel_height - image_height) // 2) + 1
+        + kernel_height - image_height) // 2) + 1
         pw = ((((image_width - 1) * sw)
-                + kernel_width - image_width) // 2) + 1
+        + kernel_width - image_width) // 2) + 1
     elif padding == 'valid':
         ph = 0
         pw = 0
@@ -46,7 +46,9 @@ def convolve_grayscale(images, kernel, padding='same', stride=(1, 1)):
     convolved_height = ((image_height - kernel_height + (2 * ph)) // sh) + 1
 
     padded_images = np.pad(images, ((0, 0), (ph, ph), (pw, pw)), 'constant')
-    convolved_matrix = np.zeros((num_images, convolved_height, convolved_width))
+    convolved_matrix = np.zeros(
+        (num_images, convolved_height, convolved_width)
+    )
 
     for i in range(convolved_width):
         for j in range(convolved_height):
