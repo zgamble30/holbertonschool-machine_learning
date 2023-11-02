@@ -48,7 +48,7 @@ def convolve_grayscale_same(images, kernel):
     for x in range(image_width):
         for y in range(image_height):
             image_section = padded_images[:, y:y + kernel_height,
-                                            x:x + kernel_width]
+                                        x:x + kernel_width]
 
             if image_section.shape[1:] == kernel.shape:
                 convolved_images[:, y, x] = np.tensordot(
