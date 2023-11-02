@@ -17,7 +17,8 @@ def test_model(network, data, labels, verbose=True):
         output should be printed during the testing process.
 
     Returns:
-        - the loss and accuracy of the model with the testing data, respectively.
+        - the loss and accuracy of the model
+        with the testing data, respectively.
     """
     evaluation = network.evaluate(data, labels, verbose=verbose)
     return evaluation
