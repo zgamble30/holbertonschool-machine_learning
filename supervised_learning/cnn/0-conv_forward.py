@@ -3,7 +3,7 @@ import numpy as np
 
 
 def conv_forward(A_prev, W, b, activation, padding="same", stride=(1, 1)):
-      """
+    """
     Perform forward propagation over a convolutional layer of a neural network.
 
     Args:
