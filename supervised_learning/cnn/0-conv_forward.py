@@ -37,8 +37,6 @@ def conv_forward(A_prev, W, b, activation, padding="same", stride=(1, 1)):
     for i in range(conv_h):
         for j in range(conv_w):
             image_section = padded_A_prev[:, i * sh:i * sh + kh, j * sw:j * sw + kw, :]
-            print("image_section.shape:", image_section.shape)
-            print("W.shape:", W.shape)
-            conv_output[:, i, j, :] = activation(np.sum(image_section * W, axis=(1, 2, 3)) + b)
+            conv_output[:, i, j, :] = activation(np.sum(image_section * W, axis=(1, 2, 3), keepdims=True) + b)
 
     return conv_output
