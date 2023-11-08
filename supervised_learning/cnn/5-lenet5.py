@@ -8,7 +8,8 @@ def lenet5(X):
     Build a modified LeNet-5 architecture using Keras.
 
     Args:
-    - X: K.Input of shape (m, 28, 28, 1) containing the input images for the network
+    - X: K.Input of shape (m, 28, 28, 1)
+    containing the input images for the network
 
     Returns:
     - model: K.Model compiled to use Adam optimization and accuracy metrics
