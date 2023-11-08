@@ -59,7 +59,7 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
                     a_slice = A_prev_pad[i, vert_start:vert_end, horiz_start:horiz_end, :]
 
                     # Update gradients using the chain rule and the gradient of the activation function
-                    dA_prev[i, vert_start:vert_end, horiz_start:horiz_end, :] += np.sum(W[:, :, :, c] * dZ[i, h, w, c], axis=-1)
+                    dA_prev[i, vert_start:vert_end, horiz_start:horiz_end, :] += W[:, :, :, c] * dZ[i, h, w, c]
                     dW[:, :, :, c] += a_slice * dZ[i, h, w, c]
                     db[:, :, :, c] += dZ[i, h, w, c]
 
