@@ -1,42 +1,61 @@
 #!/usr/bin/env python3
+""" Performs a custom convolution operation."""
 import numpy as np
 
 
-def conv_forward(A_prev, W, b, activation, padding="same", stride=(1, 1)):
+def custom_convolution(A, K, b, act, pad_type="same", step=(1, 1)):
     """
-    Perform forward propagation over a convolutional layer of a neural network.
-
-    Args:
-    - A_prev (numpy.ndarray): Output of the previous layer with shape (m, h_prev, w_prev, c_prev).
-    - W (numpy.ndarray): Kernels for the convolution with shape (kh, kw, c_prev, c_new).
-    - b (numpy.ndarray): Biases applied to the convolution with shape (1, 1, 1, c_new).
-    - activation (function): Activation function applied to the convolution.
-    - padding (str): Type of padding used, either "same" or "valid". Default is "same".
-    - stride (tuple): Strides for the convolution (sh, sw).
-
-    Returns:
-    - numpy.ndarray: Output of the convolutional layer.
+    Performs a custom convolution operation.
+    
+    :param A: Input array
+    :param K: Kernel array
+    :param b: Bias array
+    :param act: Activation function
+    :param pad_type: Padding type, either "same" or "valid"
+    :param step: Step size for convolution (also known as stride)
+    :return: Convolution result with activation applied
     """
-    m, h_prev, w_prev, c_prev = A_prev.shape
-    kh, kw, c_prev, c_new = W.shape
-    sh, sw = stride
 
-    if padding == "same":
-        ph = max(((h_prev - 1) * sh + kh - h_prev) // 2, 0)
-        pw = max(((w_prev - 1) * sw + kw - w_prev) // 2, 0)
-    elif padding == "valid":
-        ph, pw = 0, 0
+    # Get the dimensions of the input and kernel arrays
+    m, h_i, w_i, c_i = A.shape
+    k_h, k_w, c_i, c_o = K.shape
+    s_h, s_w = step
 
-    padded_A_prev = np.pad(A_prev, ((0, 0), (ph, ph), (pw, pw), (0, 0)), 'constant')
+    # Calculate padding considering the padding type
+    if pad_type == "same":
+        p_h = int(np.ceil(((h_i - 1) * s_h + k_h - h_i) / 2))
+        p_w = int(np.ceil(((w_i - 1) * s_w + k_w - w_i) / 2))
+    else:
+        p_h = p_w = 0
 
-    conv_h = (h_prev - kh + (2 * ph)) // sh + 1
-    conv_w = (w_prev - kw + (2 * pw)) // sw + 1
+    # Apply padding to the input array
+    A_pad = np.pad(A, ((0, 0), (p_h, p_h), (p_w, p_w), (0, 0)), 'constant')
 
-    conv_output = np.zeros((m, conv_h, conv_w, c_new))
+    # Compute the dimensions of the convolution output
+    conv_h = (h_i + 2 * p_h - k_h) // s_h + 1
+    conv_w = (w_i + 2 * p_w - k_w) // s_w + 1
 
+    # Initialize the convolution output array
+    conv_output = np.zeros((m, conv_h, conv_w, c_o))
+
+    # Perform the convolution operation
     for i in range(conv_h):
         for j in range(conv_w):
-            image_section = padded_A_prev[:, i * sh:i * sh + kh, j * sw:j * sw + kw, :]
-            conv_output[:, i, j, :] = activation(np.sum(image_section * W, axis=(1, 2, 3), keepdims=True) + b)
+            for c in range(c_o):
+                f_h_start = i * s_h
+                f_w_start = j * s_w
+                f_h_end = f_h_start + k_h
+                f_w_end = f_w_start + k_w
 
-    return conv_output
+                # Extract the relevant slice of the input array and the kernel
+                A_slice = A_pad[:, f_h_start:f_h_end, f_w_start:f_h_end, :]
+                K_slice = K[:, :, :, c]
+                biases = b[0, 0, 0, c]
+
+                # Apply the convolution operation and add the bias
+                conv_output[:, i, j, c] = np.sum(A_slice * K_slice, axis=(1, 2, 3)) + biases
+
+    # Apply the activation function to the convolution output
+    A_out = act(conv_output)
+    
+    return A_out
