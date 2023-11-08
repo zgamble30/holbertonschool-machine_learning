@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" Performs a custom convolution operation."""
+"""Performs a custom convolution operation."""
 import numpy as np
 
 
@@ -41,7 +41,11 @@ def conv_forward(A_prev, W, b, activation, padding="same", stride=(1, 1)):
     Z = np.zeros((m, output_height, output_width, c_new))
 
     # Pad input array
-    A_prev_pad = np.pad(A_prev, ((0, 0), (ph, ph), (pw, pw), (0, 0)), 'constant')
+    A_prev_pad = np.pad(
+        A_prev,
+        ((0, 0), (ph, ph), (pw, pw), (0, 0)),
+        'constant'
+    )
 
     # Perform the convolution operation
     for h in range(output_height):
@@ -53,14 +57,22 @@ def conv_forward(A_prev, W, b, activation, padding="same", stride=(1, 1)):
                 filter_end_width = filter_start_width + kw
 
                 # Extract the relevant slice of the input array and the weights
-                a_slice_prev = A_prev_pad[:, filter_start_height:filter_end_height, filter_start_width:filter_end_width, :]
+                a_slice_prev = A_prev_pad[
+                    :,
+                    filter_start_height:filter_end_height,
+                    filter_start_width:filter_end_width,
+                    :
+                ]
                 weights = W[:, :, :, c]
 
                 # Adjust the dimensions of the bias term for broadcasting
                 biases = b[:, :, :, c]
 
                 # Apply the convolution operation and add the bias
-                Z[:, h, w, c] = np.sum(a_slice_prev * weights, axis=(1, 2, 3)) + biases
+                Z[:, h, w, c] = np.sum(
+                    a_slice_prev * weights,
+                    axis=(1, 2, 3)
+                ) + biases
 
     # Apply the activation function to the convolution output
     A = activation(Z)
