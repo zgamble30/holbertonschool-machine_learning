@@ -3,59 +3,64 @@
 import numpy as np
 
 
-def custom_convolution(A, K, b, act, pad_type="same", step=(1, 1)):
+def conv_forward(A_prev, W, b, activation, padding="same", stride=(1, 1)):
     """
-    Performs a custom convolution operation.
+    Performs forward convolution operation.
     
-    :param A: Input array
-    :param K: Kernel array
-    :param b: Bias array
-    :param act: Activation function
-    :param pad_type: Padding type, either "same" or "valid"
-    :param step: Step size for convolution (also known as stride)
-    :return: Convolution result with activation applied
+    Parameters:
+    A_prev (np.array): Input array of previous layer
+    W (np.array): Weights array
+    b (np.array): Bias array
+    activation (function): Activation function to be used
+    padding (str, optional): Type of padding, can be "same" or "valid". Default is "same"
+    stride (tuple, optional): Tuple indicating stride in height and width direction. Default is (1, 1)
+    
+    Returns:
+    np.array: Result of the convolution operation
     """
+    
+    # Get the dimensions of the input and weights arrays
+    m, h_prev, w_prev, c_prev = A_prev.shape
+    kh, kw, _, c_new = W.shape
+    sh, sw = stride
 
-    # Get the dimensions of the input and kernel arrays
-    m, h_i, w_i, c_i = A.shape
-    k_h, k_w, c_i, c_o = K.shape
-    s_h, s_w = step
-
-    # Calculate padding considering the padding type
-    if pad_type == "same":
-        p_h = int(np.ceil(((h_i - 1) * s_h + k_h - h_i) / 2))
-        p_w = int(np.ceil(((w_i - 1) * s_w + k_w - w_i) / 2))
+    # Calculate padding based on padding type
+    if padding == "same":
+        ph = int(np.ceil(((h_prev - 1) * sh + kh - h_prev) / 2))
+        pw = int(np.ceil(((w_prev - 1) * sw + kw - w_prev) / 2))
     else:
-        p_h = p_w = 0
+        ph = pw = 0
 
-    # Apply padding to the input array
-    A_pad = np.pad(A, ((0, 0), (p_h, p_h), (p_w, p_w), (0, 0)), 'constant')
+    # Calculate output dimensions
+    output_height = (h_prev + 2 * ph - kh) // sh + 1
+    output_width = (w_prev + 2 * pw - kw) // sw + 1
 
-    # Compute the dimensions of the convolution output
-    conv_h = (h_i + 2 * p_h - k_h) // s_h + 1
-    conv_w = (w_i + 2 * p_w - k_w) // s_w + 1
-
-    # Initialize the convolution output array
-    conv_output = np.zeros((m, conv_h, conv_w, c_o))
+    # Initialize output array
+    Z = np.zeros((m, output_height, output_width, c_new))
+    
+    # Pad input array
+    A_prev_pad = np.pad(A_prev, ((0, 0), (ph, ph), (pw, pw), (0, 0)), 'constant')
 
     # Perform the convolution operation
-    for i in range(conv_h):
-        for j in range(conv_w):
-            for c in range(c_o):
-                f_h_start = i * s_h
-                f_w_start = j * s_w
-                f_h_end = f_h_start + k_h
-                f_w_end = f_w_start + k_w
+    for h in range(output_height):
+        for w in range(output_width):
+            for c in range(c_new):
+                filter_start_height = h * sh
+                filter_start_width = w * sw
+                filter_end_height = filter_start_height + kh
+                filter_end_width = filter_start_width + kw
 
-                # Extract the relevant slice of the input array and the kernel
-                A_slice = A_pad[:, f_h_start:f_h_end, f_w_start:f_h_end, :]
-                K_slice = K[:, :, :, c]
-                biases = b[0, 0, 0, c]
+                # Extract the relevant slice of the input array and the weights
+                a_slice_prev = A_prev_pad[:, filter_start_height:filter_end_height, filter_start_width:filter_end_width, :]
+                weights = W[:, :, :, c]
+
+                # Adjust the dimensions of the bias term for broadcasting
+                biases = b[:, :, :, c]
 
                 # Apply the convolution operation and add the bias
-                conv_output[:, i, j, c] = np.sum(A_slice * K_slice, axis=(1, 2, 3)) + biases
+                Z[:, h, w, c] = np.sum(a_slice_prev * weights, axis=(1, 2, 3)) + biases
 
     # Apply the activation function to the convolution output
-    A_out = act(conv_output)
+    A = activation(Z)
     
-    return A_out
+    return A
