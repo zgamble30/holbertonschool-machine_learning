@@ -6,19 +6,21 @@ import numpy as np
 def conv_forward(A_prev, W, b, activation, padding="same", stride=(1, 1)):
     """
     Performs forward convolution operation.
-    
+
     Parameters:
     A_prev (np.array): Input array of previous layer
     W (np.array): Weights array
     b (np.array): Bias array
     activation (function): Activation function to be used
-    padding (str, optional): Type of padding, can be "same" or "valid". Default is "same"
-    stride (tuple, optional): Tuple indicating stride in height and width direction. Default is (1, 1)
-    
+    padding (str, optional): Type of padding,
+    can be "same" or "valid". Default is "same"
+    stride (tuple, optional): Tuple indicating
+    stride in height and width direction. Default is (1, 1)
+
     Returns:
     np.array: Result of the convolution operation
     """
-    
+
     # Get the dimensions of the input and weights arrays
     m, h_prev, w_prev, c_prev = A_prev.shape
     kh, kw, _, c_new = W.shape
@@ -37,7 +39,7 @@ def conv_forward(A_prev, W, b, activation, padding="same", stride=(1, 1)):
 
     # Initialize output array
     Z = np.zeros((m, output_height, output_width, c_new))
-    
+
     # Pad input array
     A_prev_pad = np.pad(A_prev, ((0, 0), (ph, ph), (pw, pw), (0, 0)), 'constant')
 
@@ -62,5 +64,5 @@ def conv_forward(A_prev, W, b, activation, padding="same", stride=(1, 1)):
 
     # Apply the activation function to the convolution output
     A = activation(Z)
-    
+
     return A
