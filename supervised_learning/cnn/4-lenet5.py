@@ -23,10 +23,10 @@ def lenet5(x, y):
 
     # Convolutional Layer 1
     conv1 = tf.layers.Conv2D(
-        filters=6, 
-        kernel_size=(5, 5), 
+        filters=6,
+        kernel_size=(5, 5),
         padding='same',
-        activation=tf.nn.relu, 
+        activation=tf.nn.relu,
         kernel_initializer=initializer
     )(x)
 
@@ -35,10 +35,10 @@ def lenet5(x, y):
 
     # Convolutional Layer 2
     conv2 = tf.layers.Conv2D(
-        filters=16, 
-        kernel_size=(5, 5), 
+        filters=16,
+        kernel_size=(5, 5),
         padding='valid',
-        activation=tf.nn.relu, 
+        activation=tf.nn.relu,
         kernel_initializer=initializer
     )(pool1)
 
@@ -50,21 +50,21 @@ def lenet5(x, y):
 
     # Fully Connected Layer 1
     fc1 = tf.layers.Dense(
-        units=120, 
-        activation=tf.nn.relu, 
+        units=120,
+        activation=tf.nn.relu,
         kernel_initializer=initializer
     )(flatten)
 
     # Fully Connected Layer 2
     fc2 = tf.layers.Dense(
-        units=84, 
-        activation=tf.nn.relu, 
+        units=84,
+        activation=tf.nn.relu,
         kernel_initializer=initializer
     )(fc1)
 
     # Output Layer
     logits = tf.layers.Dense(
-        units=10, 
+        units=10,
         kernel_initializer=initializer
     )(fc2)
 
