@@ -27,7 +27,7 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
     sh, sw = stride
 
     # Initialize output arrays
-    dA_prev = np.zeros((m, h_prev, w_prev, c_prev))
+    dA_prev = np.zeros_like(A_prev)
     dW = np.zeros_like(W)
     db = np.zeros_like(b)
 
