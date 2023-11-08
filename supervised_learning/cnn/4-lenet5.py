@@ -1,8 +1,24 @@
 #!/usr/bin/env python3
-"""Modified lenet5."""
+"""Modified LeNet-5 model in TensorFlow."""
 import tensorflow.compat.v1 as tf
 
+
 def lenet5(x, y):
+    """
+    Build a modified LeNet-5 architecture using TensorFlow.
+
+    Args:
+    - x: tf.placeholder of shape (m, 28, 28, 1) containing input images
+    - y: tf.placeholder of shape (m, 10) containing one-hot labels
+
+    Returns:
+    - y_pred: tensor for the softmax activated output
+    - train_op: training operation using Adam optimization
+    - loss: tensor for the loss of the network
+    - accuracy: tensor for the accuracy of the network
+    """
+
+    # Initialize weights using VarianceScaling with scale=2.0
     initializer = tf.keras.initializers.VarianceScaling(scale=2.0)
 
     # Convolutional Layer 1
