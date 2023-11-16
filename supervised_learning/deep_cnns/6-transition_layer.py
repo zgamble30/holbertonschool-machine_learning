@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """
-Builds a transition layer as described in Densely Connected Convolutional Networks
+Builds a transition layer as described in
+Densely Connected Convolutional Networks
 """
 import tensorflow.keras as K
 
 
 def transition_layer(X, nb_filters, compression):
     """
-    Builds a transition layer as described in Densely Connected Convolutional Networks
+    Builds a transition layer as described
+    in Densely Connected Convolutional Networks
 
     Arguments:
     - X: output from the previous layer
