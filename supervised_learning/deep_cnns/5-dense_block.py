@@ -1,68 +1,79 @@
 #!/usr/bin/env python3
 """
-buiilds dense block
+Builds the ResNet-50 architecture as described
+    in Deep Residual Learning for Image Recognition (2015)
 """
 import tensorflow.keras as K
+identity_block = __import__('2-identity_block').identity_block
+projection_block = __import__('3-projection_block').projection_block
 
 
-def dense_block(X, nb_filters, growth_rate, layers):
+def resnet50():
     """
-    Builds a dense block as described in
-    Densely Connected Convolutional Networks.
-
-    Args:
-        X (tf.Tensor): The output from the previous layer.
-        nb_filters (int): Number of filters in X.
-        growth_rate (int): Growth rate for the dense block.
-        layers (int): Number of layers in the dense block.
+    Builds the ResNet-50 architecture.
 
     Returns:
-        A tuple containing the concatenated
-        output of each layer within the Dense Block
-        and the number of filters within the
-        concatenated outputs, respectively.
+        Keras Model: The ResNet-50 model.
     """
     # Function for He normal initialization
-    HeNormal = K.initializers.he_normal()
+    he_normal_initializer = K.initializers.he_normal()
 
-    # List to store the concatenated outputs
-    concat_outputs = [X]
+    # Input layer
+    input_layer = K.layers.Input((224, 224, 3))
 
-    # Loop through the specified number of layers in the dense block
-    for _ in range(layers):
-        # Batch Normalization
-        X = K.layers.BatchNormalization(axis=3)(X)
-        X = K.layers.Activation('relu')(X)
+    # Initial convolution layer
+    X = K.layers.Conv2D(
+        filters=64,
+        kernel_size=7,
+        strides=2,
+        padding="same",
+        kernel_initializer=he_normal_initializer,
+    )(input_layer)
+    # Batch normalization before activation function
+    X = K.layers.BatchNormalization(axis=3)(X)
+    X = K.layers.Activation('relu')(X)
+    # Max pooling
+    X = K.layers.MaxPooling2D(
+        pool_size=3,
+        strides=2,
+        padding="same",
+    )(X)
 
-        # 1x1 bottleneck convolution
-        X = K.layers.Conv2D(
-            filters=4 * growth_rate,
-            kernel_size=1,
-            strides=1,
-            padding="same",
-            kernel_initializer=HeNormal,
-        )(X)
+    # Conv2 block
+    X = projection_block(X, [64, 64, 256], s=1)
+    X = identity_block(X, [64, 64, 256])
+    X = identity_block(X, [64, 64, 256])
 
-        # Batch Normalization
-        X = K.layers.BatchNormalization(axis=3)(X)
-        X = K.layers.Activation('relu')(X)
+    # Conv3 block
+    X = projection_block(X, [128, 128, 512], s=2)
+    X = identity_block(X, [128, 128, 512])
+    X = identity_block(X, [128, 128, 512])
+    X = identity_block(X, [128, 128, 512])
 
-        # 3x3 convolution
-        X = K.layers.Conv2D(
-            filters=growth_rate,
-            kernel_size=3,
-            strides=1,
-            padding="same",
-            kernel_initializer=HeNormal,
-        )(X)
+    # Conv4 block
+    X = projection_block(X, [256, 256, 1024], s=2)
+    X = identity_block(X, [256, 256, 1024])
+    X = identity_block(X, [256, 256, 1024])
+    X = identity_block(X, [256, 256, 1024])
+    X = identity_block(X, [256, 256, 1024])
+    X = identity_block(X, [256, 256, 1024])
 
-        # Append the output to the list
-        concat_outputs.append(X)
+    # Conv5 block
+    X = projection_block(X, [512, 512, 2048], s=2)
+    X = identity_block(X, [512, 512, 2048])
+    X = identity_block(X, [512, 512, 2048])
 
-        # Concatenate the outputs along the last axis
-        X = K.layers.Concatenate(axis=3)(concat_outputs)
+    # Average pooling
+    X = K.layers.AveragePooling2D(
+        pool_size=7,
+        strides=1,
+        padding="valid",
+    )(X)
 
-        # Update the number of filters
-        nb_filters += growth_rate
+    # Fully connected layer
+    X = K.layers.Dense(units=1000, activation='softmax',
+                       kernel_initializer=he_normal_initializer)(X)
 
-    return X, nb_filters
+    # Create and return the model
+    model = K.models.Model(inputs=input_layer, outputs=X, name='ResNet50')
+    return model
