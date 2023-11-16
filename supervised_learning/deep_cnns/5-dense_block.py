@@ -12,9 +12,9 @@ def dense_block(X, nb_filters, growth_rate, layers):
         nb_filters: integer representing the number of filters in X.
         growth_rate: growth rate for the dense block.
         layers: number of layers in the dense block.
-    
+
     Returns:
-        The concatenated output of each layer within the Dense Block and 
+        The concatenated output of each layer within the Dense Block and
         the number of filters within the concatenated outputs, respectively.
     """
     init = K.initializers.he_normal(seed=None)
