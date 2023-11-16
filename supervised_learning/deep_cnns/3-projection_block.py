@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Builds a projection block as described in Deep
-Residual Learning for Image 
+Residual Learning for Image
 Recognition (2015)
 """
 import tensorflow.keras as K
@@ -14,7 +14,7 @@ def projection_block(A_prev, filters, s=2):
         filters: tuple or list containing F11, F3,
         F12, respectively.
         s: stride of the first convolution
-        in both the main path and the shortcut 
+        in both the main path and the shortcut
         connection.
 
     Returns:
@@ -27,10 +27,10 @@ def projection_block(A_prev, filters, s=2):
 
     # First component of main path
     conv2d = K.layers.Conv2D(
-        filters=F11, 
-        kernel_size=(1, 1), 
+        filters=F11,
+        kernel_size=(1, 1),
         strides=(s, s),
-        padding='valid', 
+        padding='valid',
         kernel_initializer=initializer
     )(A_prev)
     batch_normalization = K.layers.BatchNormalization(axis=3)(conv2d)
@@ -38,10 +38,10 @@ def projection_block(A_prev, filters, s=2):
 
     # Second component of main path
     conv2d_1 = K.layers.Conv2D(
-        filters=F3, 
-        kernel_size=(3, 3), 
+        filters=F3,
+        kernel_size=(3, 3),
         strides=(1, 1),
-        padding='same', 
+        padding='same',
         kernel_initializer=initializer
     )(activation)
     batch_normalization_1 = K.layers.BatchNormalization(axis=3)(conv2d_1)
@@ -49,20 +49,20 @@ def projection_block(A_prev, filters, s=2):
 
     # Third component of main path
     conv2d_2 = K.layers.Conv2D(
-        filters=F12, 
-        kernel_size=(1, 1), 
+        filters=F12,
+        kernel_size=(1, 1),
         strides=(1, 1),
-        padding='valid', 
+        padding='valid',
         kernel_initializer=initializer
     )(activation_1)
     batch_normalization_2 = K.layers.BatchNormalization(axis=3)(conv2d_2)
 
     # Shortcut path
     conv2d_3 = K.layers.Conv2D(
-        filters=F12, 
-        kernel_size=(1, 1), 
+        filters=F12,
+        kernel_size=(1, 1),
         strides=(s, s),
-        padding='valid', 
+        padding='valid',
         kernel_initializer=initializer
     )(A_prev)
     batch_normalization_3 = K.layers.BatchNormalization(axis=3)(conv2d_3)
