@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""
+Main file for testing the dense_block function
+"""
 
 import tensorflow.keras as K
 dense_block = __import__('5-dense_block').dense_block
