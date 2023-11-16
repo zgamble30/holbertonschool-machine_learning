@@ -3,8 +3,14 @@
 import tensorflow.keras as K
 
 
-# Define the ResNet50 model
 def resnet50():
+   """
+   Builds the ResNet-50 architecture as described
+   in Deep Residual Learning for Image Recognition (2015).
+
+   Returns:
+       Keras model: The ResNet-50 model.
+   """
    # Import the identity_block and projection_block functions
    identity_block = __import__('2-identity_block').identity_block
    projection_block = __import__('3-projection_block').projection_block
