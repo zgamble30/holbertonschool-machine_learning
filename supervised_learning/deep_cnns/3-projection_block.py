@@ -1,68 +1,49 @@
 #!/usr/bin/env python3
 """
-Defines the projection_block function
+Builds a projection block as described in Deep Residual Learning for Image Recognition (2015)
 """
-
 import tensorflow.keras as K
 
 
 def projection_block(A_prev, filters, s=2):
     """
-    Builds a projection block as described in Deep Residual Learning for
-    Image Recognition (2015)
-
-    Arguments:
-        A_prev: Output from the previous layer
-        filters: Tuple or list (F11, F3, F12)
-                 F11 is the number of filters in the first 1x1 convolution
-                 F3 is the number of filters in the 3x3 convolution
-                 F12 is the number of filters in the second 1x1 convolution
-        s: Stride of the first convolution in both the main path and
-           shortcut connection
+    Args:
+        A_prev: output from the previous layer.
+        filters: tuple or list containing F11, F3, F12, respectively.
+        s: stride of the first convolution in both the main path and the shortcut connection.
 
     Returns:
-        Activated output of the projection block
+        the activated output of the projection block.
     """
-    # Retrieve filters
     F11, F3, F12 = filters
 
+    # Initialize the He normal initializer
+    initializer = K.initializers.he_normal()
+
+    # First component of main path
+    conv2d = K.layers.Conv2D(filters=F11, kernel_size=(1, 1), strides=(s, s),
+                             padding='valid', kernel_initializer=initializer)(A_prev)
+    batch_normalization = K.layers.BatchNormalization(axis=3)(conv2d)
+    activation = K.layers.Activation('relu')(batch_normalization)
+
+    # Second component of main path
+    conv2d_1 = K.layers.Conv2D(filters=F3, kernel_size=(3, 3), strides=(1, 1),
+                               padding='same', kernel_initializer=initializer)(activation)
+    batch_normalization_1 = K.layers.BatchNormalization(axis=3)(conv2d_1)
+    activation_1 = K.layers.Activation('relu')(batch_normalization_1)
+
+    # Third component of main path
+    conv2d_2 = K.layers.Conv2D(filters=F12, kernel_size=(1, 1), strides=(1, 1),
+                               padding='valid', kernel_initializer=initializer)(activation_1)
+    batch_normalization_2 = K.layers.BatchNormalization(axis=3)(conv2d_2)
+
     # Shortcut path
-    shortcut = K.layers.Conv2D(
-        F12,
-        kernel_size=(1, 1),
-        strides=(s, s),
-        kernel_initializer='he_normal'
-    )(A_prev)
-    shortcut = K.layers.BatchNormalization(axis=3)(shortcut)
+    conv2d_3 = K.layers.Conv2D(filters=F12, kernel_size=(1, 1), strides=(s, s),
+                               padding='valid', kernel_initializer=initializer)(A_prev)
+    batch_normalization_3 = K.layers.BatchNormalization(axis=3)(conv2d_3)
 
-    # Main path
-    conv1 = K.layers.Conv2D(
-        F11,
-        kernel_size=(1, 1),
-        strides=(s, s),
-        kernel_initializer='he_normal'
-    )(A_prev)
-    conv1 = K.layers.BatchNormalization(axis=3)(conv1)
-    conv1 = K.layers.Activation('relu')(conv1)
+    # Final step: Add shortcut value to main path, and pass it through a RELU activation
+    add = K.layers.Add()([batch_normalization_2, batch_normalization_3])
+    activation_2 = K.layers.Activation('relu')(add)
 
-    conv2 = K.layers.Conv2D(
-        F3,
-        kernel_size=(3, 3),
-        padding='same',
-        kernel_initializer='he_normal'
-    )(conv1)
-    conv2 = K.layers.BatchNormalization(axis=3)(conv2)
-    conv2 = K.layers.Activation('relu')(conv2)
-
-    conv3 = K.layers.Conv2D(
-        F12,
-        kernel_size=(1, 1),
-        kernel_initializer='he_normal'
-    )(conv2)
-    conv3 = K.layers.BatchNormalization(axis=3)(conv3)
-
-    # Add shortcut to main path
-    output = K.layers.Add()([conv3, shortcut])
-    output = K.layers.Activation('relu')(output)
-
-    return output
+    return activation_2
