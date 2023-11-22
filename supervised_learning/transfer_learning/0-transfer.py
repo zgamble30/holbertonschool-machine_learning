@@ -1,48 +1,70 @@
 #!/usr/bin/env python3
+"""
+Script to train a convolutional neural network to classify the CIFAR 10 dataset
+"""
 import tensorflow.keras as K
-import os
-from tensorflow.keras.applications import ResNet50
-from tensorflow.keras.applications.resnet50 import preprocess_input
-from tensorflow.keras.layers import Input, Lambda, Dense, Flatten
-from tensorflow.keras.models import Model
-from tensorflow.keras.datasets import cifar10
 
 
 def preprocess_data(X, Y):
-    """Preprocess CIFAR-10 data."""
-    X_p = preprocess_input(X)
+    """
+    Script must save your trained model in the current working
+    directory as cifar10.h5
+    Saved model should be compiled
+    Saved model should have a validation accuracy of 87% or higher
+    Script should not run when the file is imported
+
+    Pre-processes the data using:
+
+    X is a numpy.ndarray of shape (m, 32, 32, 3) containing the CIFAR 10 data,
+    where m is the number of data points
+    Y is a numpy.ndarray of shape (m,) containing the CIFAR 10 labels for X
+    Returns: X_p, Y_p
+        X_p is a numpy.ndarray containing the preprocessed X
+        Y_p is a numpy.ndarray containing the preprocessed Y
+
+    """
+    X_p = K.applications.efficientnet_v2.preprocess_input(
+        X, data_format="channels_last")
     Y_p = K.utils.to_categorical(Y, 10)
-    return X_p, Y_p
+    return (X_p, Y_p)
 
-def transfer_model():
-    """Build and train the transfer learning model."""
-    # Load the pre-trained ResNet50 model without the top (fully connected) layers
-    base_model = ResNet50(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
 
-    # Freeze the layers of the pre-trained model
-    for layer in base_model.layers:
-        layer.trainable = False
+if __name__ == '__main__':
+    """
+    Trains a convolutional neural network to classify CIFAR 10 dataset
+    Saves model to cifar10.h5
+    """
+    (X_train, Y_train), (X_test, Y_test) = K.datasets.cifar10.load_data()
+    X_train, Y_train = preprocess_data(X_train, Y_train)
+    X_test, Y_test = preprocess_data(X_test, Y_test)
 
-    # Add custom top layers for CIFAR-10 classification
-    x = base_model.output
-    x = Flatten()(x)
-    x = Dense(256, activation='relu')(x)
-    x = Dense(10, activation='softmax')(x)
+    inputs = K.Input(shape=(32, 32, 3))
+    inputs_resized = K.layers.Lambda(
+        lambda x: K.backend.resize_images(x,
+                                          height_factor=(224 // 32),
+                                          width_factor=(224 // 32),
+                                          data_format="channels_last"))(inputs)
 
-    # Create the transfer learning model
-    model = Model(inputs=base_model.input, outputs=x)
+    EfficientNetV2B3 = K.applications.EfficientNetV2B3(
+        include_top=False, weights='imagenet',
+        input_shape=(224, 224, 3))
 
-    # Compile the model
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    X = EfficientNetV2B3(inputs_resized, training=False)
+    X = K.layers.Flatten()(X)
+    outputs = K.layers.Dense(10, activation='softmax')(X)
 
-    # Load CIFAR-10 data
-    (_, _), (X, Y) = cifar10.load_data()
+    model = K.Model(inputs=inputs, outputs=outputs)
 
-    # Preprocess the data
-    X_p, Y_p = preprocess_data(X, Y)
+    EfficientNetV2B3.trainable = False
 
-    # Train the model
-    model.fit(X_p, Y_p, epochs=5, batch_size=32, validation_split=0.2)
+    model.compile(loss='categorical_crossentropy',
+                  optimizer=K.optimizers.Adam(),
+                  metrics=['accuracy'])
 
-    # Save the trained model
+    history = model.fit(x=X_train, y=Y_train,
+                        validation_data=(X_test, Y_test),
+                        batch_size=600,
+                        epochs=7)
+
     model.save('cifar10.h5')
+    
