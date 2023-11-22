@@ -1,67 +1,60 @@
 #!/usr/bin/env python3
 """
-Trains a convolutional neural network to classify CIFAR 10 dataset
+This script trains a convolutional neural network to classify the CIFAR 10 dataset.
 """
+
 import tensorflow.keras as K
 
 
 def preprocess_data(X, Y):
     """
-    Preprocesses the data for the model
+    This function preprocesses the CIFAR 10 data.
+
+    Args:
+    X: numpy.ndarray of shape (m, 32, 32, 3) containing the CIFAR 10 data,
+       where m is the number of data points
+    Y: numpy.ndarray of shape (m,) containing the CIFAR 10 labels for X
+
+    Returns: X_p, Y_p
+        X_p: numpy.ndarray containing the preprocessed X
+        Y_p: numpy.ndarray containing the preprocessed Y
     """
-    # Preprocess input data using VGG16 preprocessing
-    X_p = K.applications.vgg16.preprocess_input(X)
-    # One-hot encode the labels
+    X_p = X.astype('float32') / 255.0
     Y_p = K.utils.to_categorical(Y, 10)
     return X_p, Y_p
 
 if __name__ == '__main__':
     """
-    Trains a convolutional neural network on CIFAR 10 dataset
-    Saves model to cifar10.h5
+    This block trains a convolutional neural network to classify CIFAR 10 dataset
+    and saves the model to 'cifar10.h5'.
     """
-    # Load CIFAR-10 dataset
-    (X_train_orig, Y_train_orig), (X_test_orig, Y_test_orig) = K.datasets.cifar10.load_data()
-    
-    # Preprocess the training and testing data
-    X_train, Y_train = preprocess_data(X_train_orig, Y_train_orig)
-    X_test, Y_test = preprocess_data(X_test_orig, Y_test_orig)
+    (X_train, Y_train), (X_test, Y_test) = K.datasets.cifar10.load_data()
+    X_train, Y_train = preprocess_data(X_train, Y_train)
+    X_test, Y_test = preprocess_data(X_test, Y_test)
 
-    # Resize images to the input size expected by the chosen application
-    input_resized = K.layers.Lambda(
-        lambda x: K.backend.resize_images(x,
-                                          height_factor=(224 / 32),
-                                          width_factor=(224 / 32),
-                                          data_format="channels_last"))(X_train)
+    # Preprocess the data with a lambda layer
+    inputs = K.layers.Input(shape=(32, 32, 3))
+    x = K.layers.Lambda(lambda x: K.backend.resize_images(x, height_factor=7, width_factor=7, data_format="channels_last"))(inputs)
 
-    # Choose a Keras Application from Keras Applications
-    base_model = K.applications.VGG16(weights='imagenet',
-                                      include_top=False,
-                                      input_tensor=input_resized,
-                                      input_shape=(224, 224, 3))
+    # Use EfficientNetV2B3 with pre-trained weights
+    base_model = K.applications.EfficientNetV2B3(include_top=False, weights='imagenet', input_tensor=x)
 
-    # Freeze the layers in the base model
+    # Freeze layers in the base model
     for layer in base_model.layers:
         layer.trainable = False
 
-    # Add custom layers for classification on top of the base model
+    # Add custom layers for classification
     x = K.layers.Flatten()(base_model.output)
-    x = K.layers.Dense(256, activation='relu')(x)
-    output_layer = K.layers.Dense(10, activation='softmax')(x)
+    output = K.layers.Dense(10, activation='softmax')(x)
 
-    # Create a new model that includes both the base model and the custom layers
-    model = K.models.Model(inputs=base_model.input, outputs=output_layer)
+    # Create the model
+    model = K.models.Model(inputs=inputs, outputs=output)
 
-    # Compile the model with the specified loss function, optimizer, and metrics
-    model.compile(loss='categorical_crossentropy',
-                  optimizer=K.optimizers.Adam(),
-                  metrics=['accuracy'])
+    # Compile the model
+    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-    # Train the model on the preprocessed data
-    history = model.fit(x=X_train, y=Y_train,
-                        validation_data=(X_test, Y_test),
-                        batch_size=128,
-                        epochs=10)
+    # Train the model
+    history = model.fit(X_train, Y_train, validation_data=(X_test, Y_test), batch_size=128, epochs=10)
 
-    # Save the trained model
+    # Save the model
     model.save('cifar10.h5')
