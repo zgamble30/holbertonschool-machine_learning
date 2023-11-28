@@ -35,3 +35,8 @@ if __name__ == '__main__':
                                           height_factor=(224 // 32),
                                           width_factor=(224 // 32),
                                           data_format="channels_last"))(inputs)
+
+    # Load EfficientNetV2B3 model with pre-trained weights
+    efficient_net = K.applications.EfficientNetV2B3(
+        include_top=False, weights='imagenet',
+        input_shape=(224, 224, 3))
