@@ -46,3 +46,12 @@ if __name__ == '__main__':
     
     # Flatten the output
     X_flatten = K.layers.Flatten()(X)
+
+    # Add custom dense layer for classification
+    outputs = K.layers.Dense(10, activation='softmax')(X_flatten)
+
+    # Create the model
+    model = K.Model(inputs=inputs, outputs=outputs)
+
+    # Freeze EfficientNetV2B3 layers
+    efficient_net.trainable = False
