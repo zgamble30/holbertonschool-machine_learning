@@ -40,3 +40,9 @@ if __name__ == '__main__':
     efficient_net = K.applications.EfficientNetV2B3(
         include_top=False, weights='imagenet',
         input_shape=(224, 224, 3))
+    
+    # Apply EfficientNetV2B3 to resized inputs
+    X = efficient_net(inputs_resized, training=False)
+    
+    # Flatten the output
+    X_flatten = K.layers.Flatten()(X)
