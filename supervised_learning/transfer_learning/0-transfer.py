@@ -55,3 +55,17 @@ if __name__ == '__main__':
 
     # Freeze EfficientNetV2B3 layers
     efficient_net.trainable = False
+
+    # Compile the model
+    model.compile(loss='categorical_crossentropy',
+                  optimizer=K.optimizers.Adam(),
+                  metrics=['accuracy'])
+
+    # Train the model
+    history = model.fit(x=X_train, y=Y_train,
+                        validation_data=(X_test, Y_test),
+                        batch_size=600,
+                        epochs=7)
+
+    # Save the trained model
+    model.save('cifar10.h5')
