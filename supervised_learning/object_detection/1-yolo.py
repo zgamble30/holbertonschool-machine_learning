@@ -75,33 +75,58 @@ class Yolo:
         box_confidences = []
         box_class_probs = []
 
-        for output in outputs:
+        for output_index, output in enumerate(outputs):
             grid_height, grid_width, anchor_boxes, _ = output.shape
+            raw_boundary_box_coords = output[..., :4]
+            rawBoxConfidence = output[..., 4:5]
+            raw_box_class_probabilities = output[..., 5:]
 
-            # Compute bounding box coordinates
-            t_x, t_y, t_w, t_h = output[:, :, :, :4].T
-            grid = np.indices((grid_height, grid_width)).T
-            bx = (sigmoid(t_x) + grid[:, :, np.newaxis]) / grid_width
-            by = (sigmoid(t_y) + grid[:, :, np.newaxis]) / grid_height
-            bw = (anchors[:, :, 0] * np.exp(t_w)) / self.model.input.shape[1].value
-            bh = (anchors[:, :, 1] * np.exp(t_h)) / self.model.input.shape[2].value
+            # Applying sigmoid activation to the box confidence
+            box_confidence_after_sigmoid = 1 / (1 + np.exp(-rawBoxConfidence))
+            box_confidences.append(box_confidence_after_sigmoid)
 
-            # Compute bounding box coordinates (x1, y1, x2, y2)
-            x1 = (bx - bw / 2) * image_size[1]
-            y1 = (by - bh / 2) * image_size[0]
-            x2 = (bx + bw / 2) * image_size[1]
-            y2 = (by + bh / 2) * image_size[0]
+            # Applying sigmoid activation to the class probabilities
+            box_class_probs_after_sigmoid = 1 / (1 + np.exp(-raw_box_class_probabilities))
+            box_class_probs.append(box_class_probs_after_sigmoid)
 
-            boxes.append(np.stack([x1, y1, x2, y2], axis=-1))
+            for cell_y in range(grid_height):
+                for cell_x in range(grid_width):
+                    for anchor_box_index in range(anchor_boxes):
+                        anchor_width, anchor_height = self.anchors[output_index][anchor_box_index]
+                        tx, ty, tw, th = raw_boundary_box_coords[cell_y, cell_x, anchor_box_index]
 
-            # Box confidence
-            box_confidences.append(sigmoid(output[:, :, :, 4:5]))
+                        # Applying sigmoid activation and offsetting by grid cell location
+                        boundaryBoxCenter_x = (1 / (1 + np.exp(-tx))) + cell_x
+                        boundaryBoxCenter_y = (1 / (1 + np.exp(-ty))) + cell_y
 
-            # Box class probabilities
-            box_class_probs.append(sigmoid(output[:, :, :, 5:]))
+                        # Applying exponential and scaling by anchor dimensions
+                        boundary_box_width = anchor_width * np.exp(tw)
+                        boundary_box_height = anchor_height * np.exp(th)
+
+                        # Normalizing by grid and model input dimensions
+                        boundaryBoxCenter_x /= grid_width
+                        boundaryBoxCenter_y /= grid_height
+                        boundary_box_width /= int(self.model.input.shape[1])
+                        boundary_box_height /= int(self.model.input.shape[2])
+
+                        # Converting to original image scale
+                        top_left_x = (boundaryBoxCenter_x - (boundary_box_width / 2)) * image_size[1]
+                        top_left_y = (boundaryBoxCenter_y - (boundary_box_height / 2)) * image_size[0]
+                        bottom_right_x = (boundaryBoxCenter_x + (boundary_box_width / 2)) * image_size[1]
+                        bottom_right_y = (boundaryBoxCenter_y + (boundary_box_height / 2)) * image_size[0]
+
+                        # Storing the processed boundary box coordinates
+                        raw_boundary_box_coords[cell_y, cell_x, anchor_box_index] = [
+                            top_left_x,
+                            top_left_y,
+                            bottom_right_x,
+                            bottom_right_y,
+                        ]
+
+            boxes.append(raw_boundary_box_coords)
 
         return boxes, box_confidences, box_class_probs
 
-    def sigmoid(self, x):
-        """Sigmoid function."""
-        return 1 / (1 + np.exp(-x))
+def sigmoid(x):
+    """Sigmoid function."""
+    return 1 / (1 + np.exp(-x))
