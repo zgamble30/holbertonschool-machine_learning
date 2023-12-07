@@ -16,15 +16,17 @@ class Yolo:
             model_path (str): Path to where a Darknet Keras model is stored.
             classes_path (str): Path to where the list of class names used
             for the Darknet model can be found.
-            class_t (float): Box score threshold for the initial filtering step.
-            nms_t (float): IOU threshold for non-max suppression.
+            class_t (float): Box score threshold for the initial
+            filtering step.nms_t (float): IOU threshold for
+            non-max suppression.
             anchors (numpy.ndarray): Array of shape (outputs, anchor_boxes, 2)
             containing all anchor boxes.
 
         Attributes:
             model (tensorflow.keras.Model): The Darknet Keras model.
             class_names (list): List of class names for the model.
-            class_t (float): Box score threshold for the initial filtering step.
+            class_t (float): Box score threshold for the
+            initial filtering step.
             nms_t (float): IOU threshold for non-max suppression.
             anchors (numpy.ndarray): Array of anchor boxes.
         """
@@ -33,6 +35,7 @@ class Yolo:
         self.class_t = class_t
         self.nms_t = nms_t
         self.anchors = anchors
+
 
     def load_classes(self, file_path):
         """
