@@ -8,6 +8,8 @@ import numpy as np
 
 
 class Yolo:
+    """Yolo class"""
+
     def __init__(self, model_path, classes_path, class_t, nms_t, anchors):
         """
         Initializes the Yolo object.
@@ -51,51 +53,55 @@ class Yolo:
 
     def process_outputs(self, outputs, image_size):
         """
-        Process the predictions from the Darknet model for a single image.
+        Process Darknet model outputs.
 
         Parameters:
-            outputs (list of numpy.ndarray): Predictions from the Darknet model.
-            image_size (numpy.ndarray): Original size of the image.
+            outputs (list): List of numpy.ndarrays containing predictions
+                            from the Darknet model for a single image.
+            image_size (numpy.ndarray): Array containing the image’s original size
+                                        [image_height, image_width].
 
         Returns:
             tuple: (boxes, box_confidences, box_class_probs)
-                boxes: List of numpy.ndarrays containing processed boundary boxes.
-                box_confidences: List of numpy.ndarrays containing box confidences.
-                box_class_probs: List of numpy.ndarrays containing class probabilities.
+                boxes: List of numpy.ndarrays of shape (grid_height, grid_width, anchor_boxes, 4)
+                       containing the processed boundary boxes for each output.
+                       (x1, y1, x2, y2) represent the boundary box relative to the original image.
+                box_confidences: List of numpy.ndarrays of shape (grid_height, grid_width, anchor_boxes, 1)
+                                 containing the box confidences for each output.
+                box_class_probs: List of numpy.ndarrays of shape (grid_height, grid_width, anchor_boxes, classes)
+                                 containing the box’s class probabilities for each output.
         """
         boxes = []
         box_confidences = []
         box_class_probs = []
 
-        # Process each output
         for output in outputs:
-            # Extract relevant information from the output
             grid_height, grid_width, anchor_boxes, _ = output.shape
 
-            # Process boundary boxes
-            processed_boxes = output[..., :4]
-            processed_boxes[..., :2] = 1.0 / (1.0 + np.exp(-processed_boxes[..., :2]))
-            processed_boxes[..., 2:] = np.exp(processed_boxes[..., 2:])
-            processed_boxes[..., :2] += np.indices((grid_height, grid_width)).T
-            processed_boxes[..., :2] /= (grid_width, grid_height)
-            processed_boxes[..., 2:] *= self.anchors
+            # Compute bounding box coordinates
+            t_x, t_y, t_w, t_h = output[:, :, :, :4].T
+            grid = np.indices((grid_height, grid_width)).T
+            bx = (sigmoid(t_x) + grid[:, :, np.newaxis]) / grid_width
+            by = (sigmoid(t_y) + grid[:, :, np.newaxis]) / grid_height
+            bw = (anchors[:, :, 0] * np.exp(t_w)) / self.model.input.shape[1].value
+            bh = (anchors[:, :, 1] * np.exp(t_h)) / self.model.input.shape[2].value
 
-            # Convert boundary boxes to (x1, y1, x2, y2) format
-            processed_boxes[..., :2] -= processed_boxes[..., 2:] / 2
-            processed_boxes[..., 2:] += processed_boxes[..., :2]
+            # Compute bounding box coordinates (x1, y1, x2, y2)
+            x1 = (bx - bw / 2) * image_size[1]
+            y1 = (by - bh / 2) * image_size[0]
+            x2 = (bx + bw / 2) * image_size[1]
+            y2 = (by + bh / 2) * image_size[0]
 
-            # Scale boundary boxes to the original image size
-            processed_boxes[..., 0] *= image_size[1]
-            processed_boxes[..., 1] *= image_size[0]
-            processed_boxes[..., 2] *= image_size[1]
-            processed_boxes[..., 3] *= image_size[0]
+            boxes.append(np.stack([x1, y1, x2, y2], axis=-1))
 
-            boxes.append(processed_boxes)
+            # Box confidence
+            box_confidences.append(sigmoid(output[:, :, :, 4:5]))
 
-            # Process box confidences
-            box_confidences.append(1.0 / (1.0 + np.exp(-output[..., 4:5])))
-
-            # Process class probabilities
-            box_class_probs.append(1.0 / (1.0 + np.exp(-output[..., 5:])))
+            # Box class probabilities
+            box_class_probs.append(sigmoid(output[:, :, :, 5:]))
 
         return boxes, box_confidences, box_class_probs
+
+    def sigmoid(self, x):
+        """Sigmoid function."""
+        return 1 / (1 + np.exp(-x))
