@@ -8,6 +8,7 @@ import numpy as np
 
 
 class Yolo:
+    """Yolo class"""
     def __init__(self, model_path, classes_path, class_t, nms_t, anchors):
         """
         Initializes the Yolo object.
@@ -48,4 +49,3 @@ class Yolo:
         """
         with open(file_path, 'r') as f:
             return [line.strip() for line in f]
-
